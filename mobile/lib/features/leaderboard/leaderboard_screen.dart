@@ -14,10 +14,14 @@ class LeaderboardScreen extends StatefulWidget {
   State<LeaderboardScreen> createState() => _LeaderboardScreenState();
 }
 
-class _LeaderboardScreenState extends State<LeaderboardScreen> {
+class _LeaderboardScreenState extends State<LeaderboardScreen>
+    with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> _entries = [];
+  List<Map<String, dynamic>> _weeklyEntries = [];
   bool _isLoading = true;
+  bool _isWeeklyLoading = false;
   String? _error;
+  late TabController _tabController;
 
   static const List<Map<String, dynamic>> _mockData = [
     {
@@ -89,7 +93,22 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_onTabChanged);
     _loadLeaderboard();
+  }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(_onTabChanged);
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _onTabChanged() {
+    if (_tabController.index == 1 && _weeklyEntries.isEmpty && !_isWeeklyLoading) {
+      _loadWeeklyLeaderboard();
+    }
   }
 
   Future<void> _loadLeaderboard() async {
@@ -112,6 +131,38 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     }
   }
 
+  Future<void> _loadWeeklyLeaderboard() async {
+    setState(() {
+      _isWeeklyLoading = true;
+    });
+    try {
+      if (widget.apiService != null) {
+        final data = await widget.apiService!.fetchWeeklyLeaderboard();
+        setState(() => _weeklyEntries = data);
+      } else {
+        await Future.delayed(const Duration(milliseconds: 600));
+        // Convert mock data to weekly format
+        setState(() => _weeklyEntries = _mockData.map((e) => {
+          ...e,
+          'weeklyDistance': ((e['xp'] as int) / 100.0),
+          'runCount': (e['xp'] as int) ~/ 400,
+        }).toList());
+      }
+    } catch (_) {
+      setState(() => _weeklyEntries = []);
+    } finally {
+      if (mounted) setState(() => _isWeeklyLoading = false);
+    }
+  }
+
+  void _onRefresh() {
+    if (_tabController.index == 0) {
+      _loadLeaderboard();
+    } else {
+      _loadWeeklyLeaderboard();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,14 +171,69 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         child: Column(
           children: [
             _buildHeader(),
-            if (_entries.length >= 3) _buildPodium(),
+            _buildTabBar(),
             Expanded(
-              child: _isLoading ? _buildShimmer() : _buildList(),
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildOverallTab(),
+                  _buildWeeklyTab(),
+                ],
+              ),
             ),
-            if (!_isLoading && _entries.isNotEmpty) _buildFooter(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(
+          color: AppColors.primaryContainer,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        indicatorSize: TabBarIndicatorSize.tab,
+        labelColor: Colors.white,
+        unselectedLabelColor: AppColors.outline,
+        labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+        dividerColor: Colors.transparent,
+        tabs: const [
+          Tab(text: 'Umumiy'),
+          Tab(text: 'Haftalik'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverallTab() {
+    return Column(
+      children: [
+        if (_entries.length >= 3) _buildPodium(_entries),
+        Expanded(
+          child: _isLoading ? _buildShimmer() : _buildList(_entries),
+        ),
+        if (!_isLoading && _entries.isNotEmpty) _buildFooter(_entries.length),
+      ],
+    );
+  }
+
+  Widget _buildWeeklyTab() {
+    return Column(
+      children: [
+        if (_weeklyEntries.length >= 3) _buildWeeklyPodium(_weeklyEntries),
+        Expanded(
+          child: _isWeeklyLoading ? _buildShimmer() : _buildWeeklyList(_weeklyEntries),
+        ),
+        if (!_isWeeklyLoading && _weeklyEntries.isNotEmpty) _buildFooter(_weeklyEntries.length),
+      ],
     );
   }
 
@@ -160,7 +266,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             ],
           ),
           IconButton(
-            onPressed: _loadLeaderboard,
+            onPressed: _onRefresh,
             icon: const Icon(Icons.refresh_rounded, color: AppColors.primary),
           ),
         ],
@@ -168,11 +274,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     );
   }
 
-  Widget _buildPodium() {
-    if (_entries.length < 3) return const SizedBox.shrink();
-    final first = _entries[0];
-    final second = _entries[1];
-    final third = _entries[2];
+  Widget _buildPodium(List<Map<String, dynamic>> entries) {
+    if (entries.length < 3) return const SizedBox.shrink();
+    final first = entries[0];
+    final second = entries[1];
+    final third = entries[2];
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -220,10 +326,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     );
   }
 
-  Widget _buildList() {
-    final rest = _entries.skip(3).toList();
+  Widget _buildList(List<Map<String, dynamic>> entries) {
+    final rest = entries.skip(3).toList();
     if (rest.isEmpty) {
-      return _entries.isEmpty
+      return entries.isEmpty
           ? const Center(
               child: Text(
                 'Ma\'lumot topilmadi',
@@ -240,6 +346,62 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         final entry = rest[index];
         final rank = entry['rank'] as int? ?? index + 4;
         return _LeaderboardRow(entry: entry, rank: rank);
+      },
+    );
+  }
+
+  Widget _buildWeeklyPodium(List<Map<String, dynamic>> entries) {
+    if (entries.length < 3) return const SizedBox.shrink();
+    final first = entries[0];
+    final second = entries[1];
+    final third = entries[2];
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.surfaceContainerLow.withOpacity(0.8),
+            AppColors.surfaceContainer.withOpacity(0.8),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          _WeeklyPodiumEntry(entry: second, rank: 2, medalColor: const Color(0xFFB0B7C3), size: 60, height: 70),
+          _WeeklyPodiumEntry(entry: first, rank: 1, medalColor: const Color(0xFFFFD700), size: 74, height: 100, showCrown: true),
+          _WeeklyPodiumEntry(entry: third, rank: 3, medalColor: const Color(0xFFCD7F32), size: 60, height: 60),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeeklyList(List<Map<String, dynamic>> entries) {
+    if (entries.isEmpty) {
+      return const Center(
+        child: Text(
+          'Bu hafta hali yugurish yo\'q',
+          style: TextStyle(color: AppColors.outline),
+        ),
+      );
+    }
+    final rest = entries.skip(3).toList();
+    if (rest.isEmpty) return const SizedBox.shrink();
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      itemCount: rest.length,
+      itemBuilder: (context, index) {
+        final entry = rest[index];
+        final rank = entry['rank'] as int? ?? index + 4;
+        return _WeeklyLeaderboardRow(entry: entry, rank: rank);
       },
     );
   }
