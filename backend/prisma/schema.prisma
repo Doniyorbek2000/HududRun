@@ -19,6 +19,8 @@ model User {
   avatar    String?
   country   String?
   bio       String?
+  streak     Int      @default(0)
+  lastRunDate DateTime?
   level     Int      @default(1)
   xp        Int      @default(0)
   isPremium Boolean  @default(false)
@@ -58,6 +60,8 @@ model Territory {
   score    Float   @default(0)
   polygon  Json?
   area     Float?  @default(0)
+  shieldedUntil DateTime?
+  shieldOwnerId String?
   lastActivity DateTime?
 
   owner User? @relation(fields: [ownerId], references: [id], onDelete: SetNull)

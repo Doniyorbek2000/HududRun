@@ -13,6 +13,11 @@ export class UsersController {
     return this.usersService.getLeaderboard();
   }
 
+  @Get('leaderboard/weekly')
+  getWeeklyLeaderboard() {
+    return this.usersService.getWeeklyLeaderboard();
+  }
+
   @Get('me')
   getProfile(@Req() req: any) {
     return this.usersService.findOne(req.user.id);

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { ClaimTerritoryDto } from './dto/claim-territory.dto';
 
@@ -25,6 +25,7 @@ export class TerritoriesService {
       area: t.area,
       polygon: t.polygon,
       lastActivity: t.lastActivity,
+      shieldedUntil: t.shieldedUntil,
     }));
   }
 
@@ -40,6 +41,11 @@ export class TerritoriesService {
   async claim(userId: string, dto: ClaimTerritoryDto) {
     const existing = await this.prisma.territory.findUnique({ where: { h3Index: dto.h3Index } });
     if (existing && existing.ownerId === userId) return existing;
+
+    // Check if territory is shielded
+    if (existing && existing.ownerId !== userId && existing.shieldedUntil && existing.shieldedUntil > new Date()) {
+      throw new ForbiddenException('This territory is shielded!');
+    }
 
     const previousOwner = existing?.ownerId ?? null;
 
@@ -86,6 +92,18 @@ export class TerritoriesService {
     }
 
     return territory;
+  }
+
+  async shieldTerritory(userId: string, h3Index: string) {
+    const territory = await this.prisma.territory.findUnique({ where: { h3Index } });
+    if (!territory || territory.ownerId !== userId) {
+      throw new ForbiddenException('You do not own this territory');
+    }
+    const shieldedUntil = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    return this.prisma.territory.update({
+      where: { h3Index },
+      data: { shieldedUntil, shieldOwnerId: userId },
+    });
   }
 
   async getUserTerritoryStats(userId: string) {

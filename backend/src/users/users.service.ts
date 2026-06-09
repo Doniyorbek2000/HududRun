@@ -44,6 +44,8 @@ export class UsersService {
         avatar: true,
         country: true,
         bio: true,
+        streak: true,
+        lastRunDate: true,
         level: true,
         xp: true,
         isPremium: true,
@@ -70,6 +72,8 @@ export class UsersService {
         avatar: true,
         country: true,
         bio: true,
+        streak: true,
+        lastRunDate: true,
         level: true,
         xp: true,
         isPremium: true,
@@ -77,6 +81,35 @@ export class UsersService {
         updatedAt: true,
       },
     });
+  }
+
+  async getWeeklyLeaderboard() {
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const activities = await this.prisma.activity.groupBy({
+      by: ['userId'],
+      where: { createdAt: { gte: oneWeekAgo } },
+      _sum: { distance: true },
+      _count: { id: true },
+      orderBy: { _sum: { distance: 'desc' } },
+      take: 20,
+    });
+
+    const userIds = activities.map(a => a.userId);
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, username: true, level: true, color: true },
+    });
+    const userMap = new Map(users.map(u => [u.id, u]));
+
+    return activities.map((a, i) => ({
+      rank: i + 1,
+      userId: a.userId,
+      username: userMap.get(a.userId)?.username ?? 'Unknown',
+      level: userMap.get(a.userId)?.level ?? 1,
+      color: userMap.get(a.userId)?.color ?? '#ADC6FF',
+      weeklyDistance: Math.round((a._sum.distance ?? 0) * 100) / 100,
+      runCount: a._count.id,
+    }));
   }
 
   async getTerritoryStats(userId: string) {

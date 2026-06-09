@@ -1,0 +1,2 @@
+ALTER TABLE "Territory" ADD COLUMN IF NOT EXISTS "shieldedUntil" TIMESTAMP;
+ALTER TABLE "Territory" ADD COLUMN IF NOT EXISTS "shieldOwnerId" TEXT;
