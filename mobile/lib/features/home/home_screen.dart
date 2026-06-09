@@ -7,20 +7,25 @@ import '../../theme_colors.dart';
 import '../challenges/challenges_screen.dart';
 import '../leaderboard/leaderboard_screen.dart';
 import '../map/map_screen.dart';
+import '../notifications/notifications_screen.dart';
 import '../notifications/notifications_widget.dart';
+import '../profile/profile_screen.dart';
 import '../squad/squad_settings_screen.dart';
 import '../trophies/trophy_room_screen.dart';
+import '../../screens/settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final ApiService apiService;
   final User user;
   final VoidCallback onLogout;
+  final Function(Locale)? onLocaleChanged;
 
   const HomeScreen({
     super.key,
     required this.apiService,
     required this.user,
     required this.onLogout,
+    this.onLocaleChanged,
   });
 
   @override
@@ -55,13 +60,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showNotifications() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.surfaceContainerLow,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NotificationsScreen(apiService: widget.apiService),
       ),
-      builder: (_) => const SizedBox(height: 420, child: NotificationsWidget()),
+    );
+  }
+
+  void _showSettings() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SettingsScreen(
+          onLocaleChanged: widget.onLocaleChanged ?? (_) {},
+        ),
+      ),
     );
   }
 
@@ -152,6 +164,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.notifications_outlined),
           ),
           IconButton(
+            onPressed: _showSettings,
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Sozlamalar',
+          ),
+          IconButton(
             onPressed: widget.onLogout,
             icon: const Icon(Icons.logout_outlined),
           ),
@@ -189,24 +206,36 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Row(
         children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFE6B00), Color(0xFF7A3000)],
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ProfileScreen(
+                    user: _user,
+                    apiService: widget.apiService,
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFE6B00), Color(0xFF7A3000)],
+                ),
+                borderRadius: BorderRadius.circular(12),
               ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-              child: Text(
-                _user.username.isNotEmpty
-                    ? _user.username.substring(0, 1).toUpperCase()
-                    : 'U',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 18,
+              child: Center(
+                child: Text(
+                  _user.username.isNotEmpty
+                      ? _user.username.substring(0, 1).toUpperCase()
+                      : 'U',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                  ),
                 ),
               ),
             ),

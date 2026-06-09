@@ -91,6 +91,17 @@ class ApiService {
     return body.cast<Map<String, dynamic>>();
   }
 
+  Future<List<Map<String, dynamic>>> fetchWeeklyLeaderboard() async {
+    final response = await _authenticatedGet('/users/leaderboard/weekly');
+    final body = jsonDecode(response.body) as List;
+    return body.cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> shieldTerritory(String h3Index) async {
+    final response = await _authenticatedPost('/territories/shield', {'h3Index': h3Index});
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   // ── Activities ───────────────────────────────────────────────────────────
 
   Future<Map<String, dynamic>> saveActivity({
@@ -172,6 +183,22 @@ class ApiService {
     final response = await _authenticatedGet('/friends');
     final body = jsonDecode(response.body) as List;
     return body.cast<Map<String, dynamic>>();
+  }
+
+  // ── Notifications ─────────────────────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> fetchNotifications() async {
+    try {
+      return await _authenticatedGetList('/notifications');
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> markAllNotificationsRead() async {
+    try {
+      await _authenticatedPost('/notifications/read-all', {});
+    } catch (_) {}
   }
 
   // ── Squad API ─────────────────────────────────────────────────────────────

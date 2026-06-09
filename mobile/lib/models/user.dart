@@ -5,6 +5,7 @@ class User {
   final String? avatar;
   final String? country;
   final String? bio;
+  final int streak;
   final int level;
   final int xp;
   final bool isPremium;
@@ -18,6 +19,7 @@ class User {
     this.avatar,
     this.country,
     this.bio,
+    this.streak = 0,
     required this.level,
     required this.xp,
     required this.isPremium,
@@ -33,6 +35,7 @@ class User {
       avatar: json['avatar'] as String?,
       country: json['country'] as String?,
       bio: json['bio'] as String?,
+      streak: (json['streak'] as int?) ?? 0,
       level: json['level'] as int,
       xp: json['xp'] as int,
       isPremium: json['isPremium'] as bool,

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Req, UseGuards, ForbiddenException } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { TerritoriesService } from './territories.service';
 import { ClaimTerritoryDto } from './dto/claim-territory.dto';
@@ -27,5 +27,11 @@ export class TerritoriesController {
   @UseGuards(JwtAuthGuard)
   claimTerritory(@Req() req: any, @Body() dto: ClaimTerritoryDto) {
     return this.territoriesService.claim(req.user.id, dto);
+  }
+
+  @Post('shield')
+  @UseGuards(JwtAuthGuard)
+  async shield(@Req() req: any, @Body() body: { h3Index: string }) {
+    return this.territoriesService.shieldTerritory(req.user.id, body.h3Index);
   }
 }
