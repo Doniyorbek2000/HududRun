@@ -28,6 +28,8 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _usernameCtrl;
   late TextEditingController _bioCtrl;
+  late TextEditingController _regionCtrl;
+  late TextEditingController _districtCtrl;
   String? _selectedCountry;
   String? _avatarBase64;
   bool _isSaving = false;
@@ -38,6 +40,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     _usernameCtrl = TextEditingController(text: widget.user.username);
     _bioCtrl = TextEditingController();
+    _regionCtrl = TextEditingController(text: widget.user.region ?? '');
+    _districtCtrl = TextEditingController(text: widget.user.district ?? '');
     _selectedCountry = null;
   }
 
@@ -45,6 +49,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void dispose() {
     _usernameCtrl.dispose();
     _bioCtrl.dispose();
+    _regionCtrl.dispose();
+    _districtCtrl.dispose();
     super.dispose();
   }
 
@@ -75,6 +81,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
       if (_selectedCountry != null) {
         updates['country'] = _selectedCountry;
+      }
+      if (_regionCtrl.text.trim().isNotEmpty) {
+        updates['region'] = _regionCtrl.text.trim();
+      }
+      if (_districtCtrl.text.trim().isNotEmpty) {
+        updates['district'] = _districtCtrl.text.trim();
       }
       if (_avatarBase64 != null) {
         updates['avatar'] = _avatarBase64;
@@ -253,6 +265,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          _buildField(label: 'VILOYAT', controller: _regionCtrl, icon: Icons.location_city_outlined),
+          const SizedBox(height: 16),
+          _buildField(label: 'TUMAN', controller: _districtCtrl, icon: Icons.pin_drop_outlined),
         ],
       ),
     );

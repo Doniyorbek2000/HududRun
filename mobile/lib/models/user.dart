@@ -4,6 +4,8 @@ class User {
   final String? phone;
   final String? avatar;
   final String? country;
+  final String? region;
+  final String? district;
   final String? bio;
   final int streak;
   final int level;
@@ -18,6 +20,8 @@ class User {
     this.phone,
     this.avatar,
     this.country,
+    this.region,
+    this.district,
     this.bio,
     this.streak = 0,
     required this.level,
@@ -34,6 +38,8 @@ class User {
       phone: json['phone'] as String?,
       avatar: json['avatar'] as String?,
       country: json['country'] as String?,
+      region: json['region'] as String?,
+      district: json['district'] as String?,
       bio: json['bio'] as String?,
       streak: (json['streak'] as int?) ?? 0,
       level: json['level'] as int,

@@ -97,6 +97,31 @@ class ApiService {
     return body.cast<Map<String, dynamic>>();
   }
 
+  Future<List<Map<String, dynamic>>> fetchLeaderboardFiltered({
+    String? country,
+    String? region,
+    String? district,
+  }) async {
+    final params = <String, String>{};
+    if (country != null) params['country'] = country;
+    if (region != null) params['region'] = region;
+    if (district != null) params['district'] = district;
+    final query = params.isNotEmpty
+        ? '?${params.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')}'
+        : '';
+    final response = await _authenticatedGet('/users/leaderboard$query');
+    final body = jsonDecode(response.body) as List;
+    return body.cast<Map<String, dynamic>>();
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSquadLeaderboard() async {
+    try {
+      return await _authenticatedGetList('/users/leaderboard/squads');
+    } catch (_) {
+      return [];
+    }
+  }
+
   Future<Map<String, dynamic>> shieldTerritory(String h3Index) async {
     final response = await _authenticatedPost('/territories/shield', {'h3Index': h3Index});
     return jsonDecode(response.body) as Map<String, dynamic>;
