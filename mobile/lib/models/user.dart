@@ -1,0 +1,34 @@
+class User {
+  final String id;
+  final String username;
+  final String? phone;
+  final int level;
+  final int xp;
+  final bool isPremium;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  User({
+    required this.id,
+    required this.username,
+    this.phone,
+    required this.level,
+    required this.xp,
+    required this.isPremium,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] as String,
+      username: json['username'] as String,
+      phone: json['phone'] as String?,
+      level: json['level'] as int,
+      xp: json['xp'] as int,
+      isPremium: json['isPremium'] as bool,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+    );
+  }
+}
