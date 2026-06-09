@@ -164,6 +164,42 @@ class ApiService {
     return body.cast<Map<String, dynamic>>();
   }
 
+  // ── Squad API ─────────────────────────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> fetchSquads() async {
+    try {
+      return _authenticatedGetList('/squads');
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchMySquad() async {
+    try {
+      final response = await _authenticatedGet('/squads/my');
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        if (body == null) return null;
+        return body as Map<String, dynamic>;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  Future<Map<String, dynamic>> createSquad(
+      String name, String tag, bool isPublic) async {
+    final response = await _authenticatedPost('/squads', {
+      'name': name,
+      'tag': tag,
+      'isPublic': isPublic,
+    });
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<void> joinSquad(String squadId) async {
+    await _authenticatedPost('/squads/$squadId/join', {});
+  }
+
   // ── Authenticated POST ────────────────────────────────────────────────────
 
   Future<http.Response> _authenticatedPost(

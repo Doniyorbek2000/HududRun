@@ -34,6 +34,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   List<Map<String, dynamic>> _territories = [];
   bool _territoriesLoaded = false;
   String? _locationError;
+  List<String> _stolenFromUsers = [];
+  bool _showStolenBanner = false;
 
   late AnimationController _pulseController;
   late Animation<double> _pulseAnim;
@@ -114,6 +116,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       _totalDistance = 0;
       _capturedCount = 0;
       _runStartTime = DateTime.now();
+      _stolenFromUsers = [];
+      _showStolenBanner = false;
     });
 
     _positionSub = Geolocator.getPositionStream(
@@ -163,11 +167,34 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     // Calculate area using Shoelace formula (rough km²)
     double area = _calculatePolygonAreaKm2(_runPath);
 
+    // Detect which territories we're overlapping (stolen)
+    final prevOwners = <String>[];
+    for (final t in _territories) {
+      final owner = t['ownerUsername'] as String?;
+      if (owner != null) prevOwners.add(owner);
+    }
+
     // Claim territory
     try {
       await widget.apiService?.claimPolygon(polygonData, area);
       _capturedCount = 1;
     } catch (_) {}
+
+    // Track stolen from
+    final List<String> stolen = [];
+    for (final t in _territories) {
+      final owner = t['ownerUsername'] as String?;
+      if (owner != null && !stolen.contains(owner)) stolen.add(owner);
+    }
+    if (stolen.isNotEmpty) {
+      setState(() {
+        _stolenFromUsers = stolen.take(5).toList();
+        _showStolenBanner = true;
+      });
+      Future.delayed(const Duration(seconds: 5), () {
+        if (mounted) setState(() => _showStolenBanner = false);
+      });
+    }
 
     await _loadTerritories();
 
@@ -215,6 +242,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         children: [
           _buildMap(),
           _buildTopStats(),
+          if (_showStolenBanner) _buildStolenBanner(),
           if (_locationError != null) _buildLocationError(),
           _buildBottomControls(),
           if (_isLoading)
@@ -244,13 +272,18 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       ),
       children: [
         TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          urlTemplate:
+              'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.hududrun.app',
           maxZoom: 19,
         ),
         // Existing territories
         PolygonLayer(
           polygons: _buildTerritoryPolygons(),
+        ),
+        // Owner avatar markers
+        MarkerLayer(
+          markers: _buildOwnerMarkers(),
         ),
         // Current run path
         if (_runPath.length > 1)
@@ -375,6 +408,135 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     } catch (_) {
       return AppColors.primary;
     }
+  }
+
+  LatLng _polygonCentroid(List<LatLng> points) {
+    double lat = 0, lng = 0;
+    for (final p in points) {
+      lat += p.latitude;
+      lng += p.longitude;
+    }
+    return LatLng(lat / points.length, lng / points.length);
+  }
+
+  List<Marker> _buildOwnerMarkers() {
+    final markers = <Marker>[];
+    for (final territory in _territories) {
+      final rawPolygon = territory['polygon'];
+      if (rawPolygon == null) continue;
+      List<dynamic> points;
+      try {
+        points = rawPolygon as List<dynamic>;
+      } catch (_) {
+        continue;
+      }
+      if (points.length < 3) continue;
+
+      final latlngs = points.map<LatLng>((p) {
+        final map = p as Map<String, dynamic>;
+        return LatLng(
+          (map['lat'] as num).toDouble(),
+          (map['lng'] as num).toDouble(),
+        );
+      }).toList();
+
+      final center = _polygonCentroid(latlngs);
+      final username = territory['ownerUsername'] as String? ?? '?';
+      final colorHex = territory['ownerColor'] as String? ?? '#ADC6FF';
+      final color = _hexToColor(colorHex);
+      final initial = username.isNotEmpty ? username[0].toUpperCase() : '?';
+
+      markers.add(Marker(
+        point: center,
+        width: 36,
+        height: 36,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+            border: Border.all(color: Colors.white, width: 2),
+            boxShadow: [
+              BoxShadow(color: color.withOpacity(0.5), blurRadius: 8),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              initial,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      ));
+    }
+    return markers;
+  }
+
+  Widget _buildStolenBanner() {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: SafeArea(
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF7C3AED), Color(0xFF4C1D95)],
+            ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF7C3AED).withOpacity(0.5),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Siz ${_stolenFromUsers.length} kishining hududini oldingiz!',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: _stolenFromUsers.take(5).map((name) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildTopStats() {

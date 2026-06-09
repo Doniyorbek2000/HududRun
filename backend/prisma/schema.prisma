@@ -31,6 +31,8 @@ model User {
   challengeParticipants ChallengeParticipant[]
   notifications Notification[]
   refreshTokens RefreshToken[]
+  squadsAsCaptain Squad[] @relation("SquadCaptain")
+  squadMemberships SquadMember[]
 }
 
 model Activity {
@@ -127,4 +129,30 @@ model RefreshToken {
   expiresAt DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Squad {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  tag         String   @unique @default("")
+  color       String   @default("#ADC6FF")
+  isPublic    Boolean  @default(true)
+  captainId   String
+  createdAt   DateTime @default(now())
+
+  captain     User     @relation("SquadCaptain", fields: [captainId], references: [id], onDelete: Cascade)
+  members     SquadMember[]
+}
+
+model SquadMember {
+  id        String   @id @default(cuid())
+  squadId   String
+  userId    String
+  role      String   @default("member") // captain, co-captain, member
+  joinedAt  DateTime @default(now())
+
+  squad     Squad    @relation(fields: [squadId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([squadId, userId])
 }

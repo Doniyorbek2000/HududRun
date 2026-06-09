@@ -8,6 +8,7 @@ import '../challenges/challenges_screen.dart';
 import '../leaderboard/leaderboard_screen.dart';
 import '../map/map_screen.dart';
 import '../notifications/notifications_widget.dart';
+import '../squad/squad_settings_screen.dart';
 import '../trophies/trophy_room_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -138,6 +139,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
+          ),
+          IconButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SquadSettingsScreen()),
+            ),
+            icon: const Icon(Icons.group_outlined),
+            tooltip: 'Jamoa',
           ),
           IconButton(
             onPressed: _showNotifications,

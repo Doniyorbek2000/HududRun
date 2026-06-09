@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme_colors.dart';
+import 'team_achievements_screen.dart';
 
 class SquadSettingsScreen extends StatefulWidget {
   const SquadSettingsScreen({super.key});
@@ -56,6 +57,13 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.emoji_events_outlined, color: AppColors.secondary),
+            tooltip: 'Yutuqlar',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const TeamAchievementsScreen()),
+            ),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text(

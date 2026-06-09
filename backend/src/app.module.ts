@@ -9,6 +9,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { FriendsModule } from './friends/friends.module';
 import { ChallengesModule } from './challenges/challenges.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { SquadsModule } from './squads/squads.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -26,6 +27,7 @@ import { AppService } from './app.service';
     FriendsModule,
     ChallengesModule,
     NotificationsModule,
+    SquadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
