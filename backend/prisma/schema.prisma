@@ -18,6 +18,8 @@ model User {
   color     String   @default("#ADC6FF")
   avatar    String?
   country   String?
+  region    String?   // viloyat
+  district  String?   // tuman
   bio       String?
   streak     Int      @default(0)
   lastRunDate DateTime?

@@ -6,17 +6,25 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async getLeaderboard() {
+  async getLeaderboard(filters?: { country?: string; region?: string; district?: string }) {
+    const where: any = {};
+    if (filters?.country) where.country = filters.country;
+    if (filters?.region) where.region = filters.region;
+    if (filters?.district) where.district = filters.district;
+
     const users = await this.prisma.user.findMany({
+      where,
       select: {
         id: true,
         username: true,
+        color: true,
         level: true,
         xp: true,
         isPremium: true,
-        _count: {
-          select: { territories: true },
-        },
+        country: true,
+        region: true,
+        district: true,
+        _count: { select: { territories: true } },
       },
       orderBy: { xp: 'desc' },
       take: 50,
@@ -26,9 +34,13 @@ export class UsersService {
       rank: index + 1,
       id: u.id,
       username: u.username,
+      color: u.color,
       level: u.level,
       xp: u.xp,
       isPremium: u.isPremium,
+      country: u.country,
+      region: u.region,
+      district: u.district,
       territoryCount: u._count.territories,
     }));
   }
@@ -43,6 +55,8 @@ export class UsersService {
         color: true,
         avatar: true,
         country: true,
+        region: true,
+        district: true,
         bio: true,
         streak: true,
         lastRunDate: true,
@@ -71,6 +85,8 @@ export class UsersService {
         color: true,
         avatar: true,
         country: true,
+        region: true,
+        district: true,
         bio: true,
         streak: true,
         lastRunDate: true,
@@ -120,5 +136,45 @@ export class UsersService {
       totalAreaKm2: Math.round(totalArea * 100) / 100,
       xp: (await this.prisma.user.findUnique({ where: { id: userId }, select: { xp: true } }))?.xp ?? 0,
     };
+  }
+
+  async getSquadLeaderboard() {
+    const squads = await this.prisma.squad.findMany({
+      include: {
+        members: {
+          include: {
+            user: {
+              select: { xp: true, color: true, _count: { select: { territories: true } } },
+            },
+          },
+        },
+        captain: {
+          select: { username: true, color: true },
+        },
+      },
+    });
+
+    const ranked = squads
+      .map((squad) => {
+        const totalXp = squad.members.reduce((sum, m) => sum + m.user.xp, 0);
+        const totalTerritories = squad.members.reduce(
+          (sum, m) => sum + m.user._count.territories,
+          0,
+        );
+        return {
+          id: squad.id,
+          name: squad.name,
+          tag: squad.tag,
+          color: squad.color,
+          captainName: squad.captain.username,
+          memberCount: squad.members.length,
+          totalXp,
+          totalTerritories,
+        };
+      })
+      .sort((a, b) => b.totalXp - a.totalXp)
+      .map((s, i) => ({ ...s, rank: i + 1 }));
+
+    return ranked;
   }
 }

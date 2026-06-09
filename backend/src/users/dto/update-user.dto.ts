@@ -24,6 +24,16 @@ export class UpdateUserDto {
   bio?: string;
 
   @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  region?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  district?: string;
+
+  @IsOptional()
   @IsBoolean()
   isPremium?: boolean;
 
