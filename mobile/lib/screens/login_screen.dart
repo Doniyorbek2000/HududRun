@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../api_service.dart';
+import '../l10n/app_localizations.dart';
 import '../models/user.dart';
 import '../theme_colors.dart';
 import 'register_screen.dart';
@@ -65,10 +66,11 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Future<void> _login() async {
+    final l10n = AppLocalizations.of(context);
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
     if (username.isEmpty || password.isEmpty) {
-      setState(() => _error = 'Username va parolni kiriting');
+      setState(() => _error = l10n.loginError);
       return;
     }
 
@@ -81,8 +83,9 @@ class _LoginScreenState extends State<LoginScreen>
       final user = await widget.apiService.login(username, password);
       widget.onAuthenticated(user);
     } catch (_) {
+      final l10nInner = AppLocalizations.of(context);
       setState(() {
-        _error = 'Login muvaffaqiyatsiz. Malumotlarni tekshiring.';
+        _error = l10nInner.loginError;
       });
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -100,378 +103,386 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0E0E0E), Color(0xFF131313), Color(0xFF1A1200)],
-            stops: [0.0, 0.6, 1.0],
+    final l10n = AppLocalizations.of(context);
+    return Directionality(
+      textDirection: l10n.isRtl ? TextDirection.rtl : TextDirection.ltr,
+      child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF0E0E0E), Color(0xFF131313), Color(0xFF1A1200)],
+              stops: [0.0, 0.6, 1.0],
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            // Ambient glow background
-            Positioned(
-              top: -80,
-              left: MediaQuery.of(context).size.width / 2 - 150,
-              child: AnimatedBuilder(
-                animation: _glowAnimation,
-                builder: (_, __) => Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppColors.secondaryContainer.withOpacity(
-                          0.15 * _glowAnimation.value,
+          child: Stack(
+            children: [
+              // Ambient glow background
+              Positioned(
+                top: -80,
+                left: MediaQuery.of(context).size.width / 2 - 150,
+                child: AnimatedBuilder(
+                  animation: _glowAnimation,
+                  builder: (_, __) => Container(
+                    width: 300,
+                    height: 300,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          AppColors.secondaryContainer.withOpacity(
+                            0.15 * _glowAnimation.value,
+                          ),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SafeArea(
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 24,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 16),
+                        // Logo section
+                        Center(
+                          child: AnimatedBuilder(
+                            animation: _floatAnimation,
+                            builder: (_, __) => Transform.translate(
+                              offset: Offset(0, _floatAnimation.value),
+                              child: AnimatedBuilder(
+                                animation: _glowAnimation,
+                                builder: (_, __) => Container(
+                                  width: 90,
+                                  height: 90,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFFFE6B00),
+                                        Color(0xFF7A3000),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.secondaryContainer
+                                            .withOpacity(
+                                              0.5 * _glowAnimation.value,
+                                            ),
+                                        blurRadius: 30,
+                                        spreadRadius: 5,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.directions_run,
+                                    size: 48,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                        Colors.transparent,
+                        const SizedBox(height: 20),
+                        const Text(
+                          'HududRun',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 36,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1,
+                            fontFamily: 'Montserrat',
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.slogan,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: AppColors.onSurfaceVariant,
+                            fontSize: 14,
+                            height: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Google sign-in button
+                        _GlassCard(
+                          child: InkWell(
+                            onTap: () {}, // UI only
+                            borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 22,
+                                    height: 22,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        'G',
+                                        style: TextStyle(
+                                          color: Color(0xFF4285F4),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    l10n.googleSignIn,
+                                    style: const TextStyle(
+                                      color: AppColors.onSurface,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Divider
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: Colors.white.withOpacity(0.1),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              child: Text(
+                                l10n.isRtl ? 'أو' : 'Or',
+                                style: const TextStyle(
+                                  color: AppColors.outline,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: Colors.white.withOpacity(0.1),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Login form
+                        _GlassCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              TextField(
+                                controller: _usernameController,
+                                style: const TextStyle(
+                                  color: AppColors.onSurface,
+                                ),
+                                textDirection: l10n.isRtl
+                                    ? TextDirection.rtl
+                                    : TextDirection.ltr,
+                                decoration: InputDecoration(
+                                  hintText: l10n.username,
+                                  prefixIcon: const Icon(
+                                    Icons.person_outline,
+                                    color: AppColors.outline,
+                                  ),
+                                  filled: true,
+                                  fillColor: AppColors.surfaceContainerLow,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: BorderSide(
+                                      color: Colors.white.withOpacity(0.05),
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: BorderSide(
+                                      color: Colors.white.withOpacity(0.05),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: const BorderSide(
+                                      color: AppColors.tertiary,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  hintStyle: const TextStyle(
+                                    color: AppColors.outline,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              TextField(
+                                controller: _passwordController,
+                                obscureText: _obscurePassword,
+                                style: const TextStyle(
+                                  color: AppColors.onSurface,
+                                ),
+                                textDirection: TextDirection.ltr,
+                                decoration: InputDecoration(
+                                  hintText: l10n.password,
+                                  prefixIcon: const Icon(
+                                    Icons.lock_outline,
+                                    color: AppColors.outline,
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off_outlined,
+                                      color: AppColors.outline,
+                                    ),
+                                    onPressed: () => setState(
+                                      () => _obscurePassword = !_obscurePassword,
+                                    ),
+                                  ),
+                                  filled: true,
+                                  fillColor: AppColors.surfaceContainerLow,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: BorderSide(
+                                      color: Colors.white.withOpacity(0.05),
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: BorderSide(
+                                      color: Colors.white.withOpacity(0.05),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: const BorderSide(
+                                      color: AppColors.tertiary,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  hintStyle: const TextStyle(
+                                    color: AppColors.outline,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              if (_error != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: Text(
+                                    _error!,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: AppColors.error,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              // Conquest gradient button
+                              GestureDetector(
+                                onTap: _isLoading ? null : _login,
+                                child: Container(
+                                  height: 52,
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFFFE6B00),
+                                        Color(0xFF7A3000),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0x4DFE6B00),
+                                        blurRadius: 15,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Center(
+                                    child: _isLoading
+                                        ? const SizedBox(
+                                            width: 22,
+                                            height: 22,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : Text(
+                                            l10n.login.toUpperCase(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w800,
+                                              letterSpacing: 1.5,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Register link
+                        Center(
+                          child: GestureDetector(
+                            onTap: _isLoading ? null : _openRegister,
+                            child: RichText(
+                              text: TextSpan(
+                                text: '${l10n.noAccount} ',
+                                style: const TextStyle(
+                                  color: AppColors.onSurfaceVariant,
+                                  fontSize: 14,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: l10n.register,
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w700,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: AppColors.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
                       ],
                     ),
                   ),
                 ),
               ),
-            ),
-            SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 24,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 16),
-                      // Logo section
-                      Center(
-                        child: AnimatedBuilder(
-                          animation: _floatAnimation,
-                          builder: (_, __) => Transform.translate(
-                            offset: Offset(0, _floatAnimation.value),
-                            child: AnimatedBuilder(
-                              animation: _glowAnimation,
-                              builder: (_, __) => Container(
-                                width: 90,
-                                height: 90,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFFFE6B00),
-                                      Color(0xFF7A3000),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.secondaryContainer
-                                          .withOpacity(
-                                            0.5 * _glowAnimation.value,
-                                          ),
-                                      blurRadius: 30,
-                                      spreadRadius: 5,
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.directions_run,
-                                  size: 48,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'HududRun',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 36,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1,
-                          fontFamily: 'Montserrat',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Hududlarni egalla, sog\'lom hayotga qadam qo\'y!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.onSurfaceVariant,
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Google sign-in button
-                      _GlassCard(
-                        child: InkWell(
-                          onTap: () {}, // UI only
-                          borderRadius: BorderRadius.circular(14),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 22,
-                                  height: 22,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      'G',
-                                      style: TextStyle(
-                                        color: Color(0xFF4285F4),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                const Text(
-                                  'Google orqali kirish',
-                                  style: TextStyle(
-                                    color: AppColors.onSurface,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Divider
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: Colors.white.withOpacity(0.1),
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(
-                              'Yoki',
-                              style: TextStyle(
-                                color: AppColors.outline,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: Colors.white.withOpacity(0.1),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Login form
-                      _GlassCard(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TextField(
-                              controller: _usernameController,
-                              style: const TextStyle(
-                                color: AppColors.onSurface,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'Foydalanuvchi nomi',
-                                prefixIcon: const Icon(
-                                  Icons.person_outline,
-                                  color: AppColors.outline,
-                                ),
-                                filled: true,
-                                fillColor: AppColors.surfaceContainerLow,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide(
-                                    color: Colors.white.withOpacity(0.05),
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide(
-                                    color: Colors.white.withOpacity(0.05),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(
-                                    color: AppColors.tertiary,
-                                    width: 1.5,
-                                  ),
-                                ),
-                                hintStyle: const TextStyle(
-                                  color: AppColors.outline,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            TextField(
-                              controller: _passwordController,
-                              obscureText: _obscurePassword,
-                              style: const TextStyle(
-                                color: AppColors.onSurface,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'Parol',
-                                prefixIcon: const Icon(
-                                  Icons.lock_outline,
-                                  color: AppColors.outline,
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_outlined
-                                        : Icons.visibility_off_outlined,
-                                    color: AppColors.outline,
-                                  ),
-                                  onPressed: () => setState(
-                                    () => _obscurePassword = !_obscurePassword,
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: AppColors.surfaceContainerLow,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide(
-                                    color: Colors.white.withOpacity(0.05),
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide(
-                                    color: Colors.white.withOpacity(0.05),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(
-                                    color: AppColors.tertiary,
-                                    width: 1.5,
-                                  ),
-                                ),
-                                hintStyle: const TextStyle(
-                                  color: AppColors.outline,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            if (_error != null)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: Text(
-                                  _error!,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: AppColors.error,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            // Conquest gradient button
-                            GestureDetector(
-                              onTap: _isLoading ? null : _login,
-                              child: Container(
-                                height: 52,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFFFE6B00),
-                                      Color(0xFF7A3000),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0x4DFE6B00),
-                                      blurRadius: 15,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: _isLoading
-                                      ? const SizedBox(
-                                          width: 22,
-                                          height: 22,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      : const Text(
-                                          'KIRISH',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w800,
-                                            letterSpacing: 1.5,
-                                          ),
-                                        ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Register link
-                      Center(
-                        child: GestureDetector(
-                          onTap: _isLoading ? null : _openRegister,
-                          child: RichText(
-                            text: TextSpan(
-                              text: 'Hisobingiz yo\'qmi? ',
-                              style: const TextStyle(
-                                color: AppColors.onSurfaceVariant,
-                                fontSize: 14,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: 'Ro\'yxatdan o\'tish',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w700,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: AppColors.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

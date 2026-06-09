@@ -1,51 +1,173 @@
+// ignore_for_file: deprecated_member_use
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../api_service.dart';
 import '../../models/user.dart';
+import '../../theme_colors.dart';
+import '../../l10n/countries.dart';
+import 'edit_profile_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final User user;
   final ApiService? apiService;
 
   const ProfileScreen({super.key, required this.user, this.apiService});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  late User _user;
+  Map<String, dynamic>? _territoryStats;
+  bool _loadingStats = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = widget.user;
+    _loadTerritoryStats();
+  }
+
+  Future<void> _loadTerritoryStats() async {
+    if (widget.apiService == null) {
+      setState(() => _loadingStats = false);
+      return;
+    }
+    try {
+      final response = await widget.apiService!
+          .fetchTerritoryStats();
+      setState(() {
+        _territoryStats = response;
+        _loadingStats = false;
+      });
+    } catch (_) {
+      setState(() => _loadingStats = false);
+    }
+  }
+
+  void _onProfileUpdated(Map<String, dynamic> data) {
+    setState(() {
+      _user = User(
+        id: data['id'] as String? ?? _user.id,
+        username: data['username'] as String? ?? _user.username,
+        phone: data['phone'] as String? ?? _user.phone,
+        avatar: data['avatar'] as String? ?? _user.avatar,
+        country: data['country'] as String? ?? _user.country,
+        bio: data['bio'] as String? ?? _user.bio,
+        level: data['level'] as int? ?? _user.level,
+        xp: data['xp'] as int? ?? _user.xp,
+        isPremium: data['isPremium'] as bool? ?? _user.isPremium,
+        createdAt: _user.createdAt,
+        updatedAt: DateTime.now(),
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF081520),
+      color: AppColors.background,
       child: ListView(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
         children: [
-          const CircleAvatar(
-            radius: 48,
-            backgroundColor: Color(0xFF304E98),
-            child: Icon(Icons.run_circle, size: 42, color: Colors.white),
+          // ── Avatar + name + country ──────────────────────────────────────
+          Center(
+            child: _AvatarWidget(user: _user),
           ),
-          const SizedBox(height: 18),
-          Text(
-            user.username,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _user.username,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.onSurface,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  fontFamily: 'Montserrat',
+                ),
+              ),
+              if (_user.country != null) ...[
+                const SizedBox(width: 8),
+                Text(
+                  countryFlag(_user.country),
+                  style: const TextStyle(fontSize: 22),
+                ),
+              ],
+            ],
+          ),
+          if (_user.bio != null && _user.bio!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              _user.bio!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.onSurfaceVariant,
+                fontSize: 14,
+                height: 1.4,
+              ),
             ),
-          ),
+          ],
           const SizedBox(height: 6),
           Text(
-            user.isPremium ? 'Premium Runner' : 'Rookie Runner',
+            _user.isPremium ? 'Premium Runner' : 'Rookie Runner',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
+            style: const TextStyle(color: AppColors.outline, fontSize: 13),
           ),
+          const SizedBox(height: 20),
+
+          // ── Edit profile button ──────────────────────────────────────────
+          if (widget.apiService != null)
+            Center(
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditProfileScreen(
+                        user: _user,
+                        apiService: widget.apiService!,
+                        onUpdated: _onProfileUpdated,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.edit_outlined, size: 16),
+                label: const Text('Profilni tahrirlash'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.primary, width: 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 10),
+                ),
+              ),
+            ),
           const SizedBox(height: 24),
-          _StatTile(label: 'Territory owned', value: '6 km²'),
-          _StatTile(label: 'XP', value: user.xp.toString()),
-          _StatTile(label: 'Level', value: user.level.toString()),
-          const SizedBox(height: 16),
-          _TerritoryStatsCard(),
-          const SizedBox(height: 16),
+
+          // ── Stats row ────────────────────────────────────────────────────
+          _StatsRow(
+            territoryCount: _loadingStats
+                ? null
+                : (_territoryStats?['count'] as int?),
+            totalAreaKm2: _loadingStats
+                ? null
+                : (_territoryStats?['totalAreaKm2'] as num?)?.toDouble(),
+            xp: _user.xp,
+            level: _user.level,
+          ),
+          const SizedBox(height: 20),
+
+          // ── Badges ───────────────────────────────────────────────────────
           const _BadgeRow(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
+
+          // ── Info cards ───────────────────────────────────────────────────
           const _InfoCard(
             title: 'Active mission',
             description:
@@ -65,42 +187,154 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _StatTile extends StatelessWidget {
-  final String label;
-  final String value;
+// ── Avatar widget ──────────────────────────────────────────────────────────────
 
-  const _StatTile({required this.label, required this.value});
+class _AvatarWidget extends StatelessWidget {
+  final User user;
+  const _AvatarWidget({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    ImageProvider? image;
+    if (user.avatar != null && user.avatar!.isNotEmpty) {
+      try {
+        final data = user.avatar!.contains(',')
+            ? user.avatar!.split(',').last
+            : user.avatar!;
+        image = MemoryImage(base64Decode(data));
+      } catch (_) {
+        image = null;
+      }
+    }
+
+    return CircleAvatar(
+      radius: 54,
+      backgroundColor: AppColors.surfaceContainerHigh,
+      backgroundImage: image,
+      child: image == null
+          ? Text(
+              user.username.isNotEmpty
+                  ? user.username[0].toUpperCase()
+                  : 'U',
+              style: const TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.w800,
+                color: AppColors.primary,
+              ),
+            )
+          : null,
+    );
+  }
+}
+
+// ── Stats row ─────────────────────────────────────────────────────────────────
+
+class _StatsRow extends StatelessWidget {
+  final int? territoryCount;
+  final double? totalAreaKm2;
+  final int xp;
+  final int level;
+
+  const _StatsRow({
+    required this.territoryCount,
+    required this.totalAreaKm2,
+    required this.xp,
+    required this.level,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1D34),
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF2E436C)),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white70, fontSize: 15),
+          _StatItem(
+            label: 'Hududlar',
+            value: territoryCount != null ? '$territoryCount' : '—',
+            icon: Icons.map_outlined,
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+          _Divider(),
+          _StatItem(
+            label: 'km²',
+            value: totalAreaKm2 != null
+                ? totalAreaKm2!.toStringAsFixed(1)
+                : '—',
+            icon: Icons.straighten_outlined,
+          ),
+          _Divider(),
+          _StatItem(
+            label: 'XP',
+            value: '$xp',
+            icon: Icons.bolt_outlined,
+          ),
+          _Divider(),
+          _StatItem(
+            label: 'Daraja',
+            value: '$level',
+            icon: Icons.military_tech_outlined,
           ),
         ],
       ),
     );
   }
 }
+
+class _Divider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 36,
+      width: 1,
+      color: AppColors.outlineVariant,
+    );
+  }
+}
+
+class _StatItem extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+
+  const _StatItem({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, color: AppColors.primary, size: 18),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.onSurface,
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.outline,
+            fontSize: 11,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Badges ────────────────────────────────────────────────────────────────────
 
 class _BadgeRow extends StatelessWidget {
   const _BadgeRow({super.key});
@@ -110,15 +344,16 @@ class _BadgeRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1D34),
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Badges',
-            style: TextStyle(color: Colors.white70, fontSize: 14),
+            style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14),
           ),
           const SizedBox(height: 14),
           Row(
@@ -164,7 +399,7 @@ class _BadgeChip extends StatelessWidget {
       width: 96,
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF162645),
+        color: AppColors.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
@@ -174,7 +409,7 @@ class _BadgeChip extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
+            style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 12),
           ),
         ],
       ),
@@ -182,70 +417,7 @@ class _BadgeChip extends StatelessWidget {
   }
 }
 
-class _TerritoryStatsCard extends StatelessWidget {
-  const _TerritoryStatsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0D1D34),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF2E436C)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
-            'Territory Stats',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _TerritoryStatItem(label: 'Hududlar', value: '0 hudud'),
-              _TerritoryStatItem(label: 'Maydon', value: '0.0 km²'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TerritoryStatItem extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _TerritoryStatItem({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white54, fontSize: 12),
-        ),
-      ],
-    );
-  }
-}
+// ── Info card ─────────────────────────────────────────────────────────────────
 
 class _InfoCard extends StatelessWidget {
   final String title;
@@ -262,20 +434,20 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1D34),
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFF2A3A5D)),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       padding: const EdgeInsets.all(18),
       child: Row(
         children: [
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF304E98),
+              color: AppColors.primaryContainer.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             padding: const EdgeInsets.all(14),
-            child: Icon(icon, color: Colors.white, size: 24),
+            child: Icon(icon, color: AppColors.primary, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -285,7 +457,7 @@ class _InfoCard extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.onSurface,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
@@ -294,7 +466,7 @@ class _InfoCard extends StatelessWidget {
                 Text(
                   description,
                   style: const TextStyle(
-                    color: Colors.white70,
+                    color: AppColors.onSurfaceVariant,
                     fontSize: 13,
                     height: 1.5,
                   ),

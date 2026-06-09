@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsBoolean, IsInt, Min } from 'class-validator';
+import { IsOptional, IsString, IsBoolean, IsInt, Min, MaxLength } from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -8,6 +8,20 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @IsOptional()
+  @IsString()
+  avatar?: string;  // base64 data URL
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2)
+  country?: string;  // ISO country code e.g. 'UZ', 'RU'
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  bio?: string;
 
   @IsOptional()
   @IsBoolean()

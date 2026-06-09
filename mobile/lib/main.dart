@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api_service.dart';
 import 'features/home/home_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/splash/splash_screen.dart';
+import 'l10n/app_localizations.dart';
 import 'models/user.dart';
 import 'screens/login_screen.dart';
 import 'theme.dart';
 
+final GlobalKey<_MyAppState> appKey = GlobalKey<_MyAppState>();
+
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp(key: appKey));
 }
 
 class MyApp extends StatefulWidget {
@@ -28,14 +33,20 @@ class _MyAppState extends State<MyApp> {
   bool _isLoading = true;
   bool _isReady = false;
   bool _hasSeenOnboarding = false;
+  Locale _locale = const Locale('uz');
 
   @override
   void initState() {
     super.initState();
-    _initializeUser();
+    _initializeApp();
   }
 
-  Future<void> _initializeUser() async {
+  Future<void> _initializeApp() async {
+    // Load locale first
+    final prefs = await SharedPreferences.getInstance();
+    final savedCode = prefs.getString('language_code') ?? 'uz';
+
+    // Then initialize user
     final tokenAvailable = await _apiService.hasAccessToken();
     final seenOnboarding = await _storage.read(key: 'seenOnboarding') == 'true';
 
@@ -50,11 +61,14 @@ class _MyAppState extends State<MyApp> {
 
     if (mounted) {
       setState(() {
+        _locale = Locale(savedCode);
         _hasSeenOnboarding = seenOnboarding;
         _isLoading = false;
       });
     }
   }
+
+  void setLocale(Locale locale) => setState(() => _locale = locale);
 
   void _handleReady() {
     setState(() {
@@ -92,6 +106,14 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'HududRun',
       theme: HududRunTheme.dark,
+      locale: _locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
       home: _isLoading
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
           : !_isReady

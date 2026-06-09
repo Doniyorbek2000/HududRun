@@ -65,6 +65,16 @@ class ApiService {
     return User.fromJson(body);
   }
 
+  Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> data) async {
+    final response = await _authenticatedPatch('/users/me', data);
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> fetchTerritoryStats() async {
+    final response = await _authenticatedGet('/users/me/territory-stats');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   Future<void> logout() async {
     final refreshToken = await _storage.read(key: 'refreshToken');
     if (refreshToken != null && refreshToken.isNotEmpty) {
@@ -201,6 +211,19 @@ class ApiService {
   }
 
   // ── Authenticated POST ────────────────────────────────────────────────────
+
+  Future<http.Response> _authenticatedPatch(
+    String path,
+    Map<String, dynamic> body,
+  ) async {
+    return _withAuth((headers) async {
+      return http.patch(
+        Uri.parse('$baseUrl$path'),
+        headers: {...headers, 'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+    });
+  }
 
   Future<http.Response> _authenticatedPost(
     String path,
