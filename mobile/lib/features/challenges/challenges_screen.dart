@@ -1,15 +1,19 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
+import '../../api_service.dart';
 import '../../theme.dart';
 
 class ChallengesScreen extends StatefulWidget {
-  const ChallengesScreen({super.key});
+  final ApiService? apiService;
+
+  const ChallengesScreen({super.key, this.apiService});
+
   @override
   State<ChallengesScreen> createState() => _ChallengesScreenState();
 }
 
 class _ChallengesScreenState extends State<ChallengesScreen> {
-  static const _activeChallenges = [
+  static const _defaultChallenges = [
     {
       'title': '7 kunlik marafon',
       'time': 'Qolgan vaqt: 2 kun 14s',
@@ -29,6 +33,43 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       'hot': true,
     },
   ];
+
+  List<Map<String, dynamic>> _challenges =
+      List<Map<String, dynamic>>.from(_defaultChallenges);
+  bool _loadingChallenges = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadChallenges();
+  }
+
+  Future<void> _loadChallenges() async {
+    if (widget.apiService == null) return;
+    setState(() => _loadingChallenges = true);
+    try {
+      final data = await widget.apiService!.fetchChallenges();
+      if (data.isNotEmpty) {
+        final apiChallenges = data.map((c) => <String, dynamic>{
+              'title': c['title'] ?? 'Musobaqa',
+              'time': 'Qolgan: ${c['endDate'] ?? '?'}',
+              'progress':
+                  ((c['progress'] ?? 0) as num).toDouble() / 100.0,
+              'progressLabel': '${c['progress'] ?? 0}%',
+              'reward': '${c['target'] ?? 0} ${c['type'] ?? ''}',
+              'color': 0xFFADC6FF,
+              'hot': false,
+            }).toList();
+        if (mounted) {
+          setState(() => _challenges = apiChallenges);
+        }
+      }
+    } catch (_) {
+      // fallback: keep mock data
+    } finally {
+      if (mounted) setState(() => _loadingChallenges = false);
+    }
+  }
 
   static const _milestones = [
     {
@@ -108,14 +149,22 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
             ],
           ),
           const SizedBox(height: 14),
+          if (_loadingChallenges)
+            const SizedBox(
+              height: 180,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          else
           SizedBox(
             height: 180,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: _activeChallenges.length,
+              itemCount: _challenges.length,
               separatorBuilder: (_, __) => const SizedBox(width: 14),
               itemBuilder: (_, i) {
-                final c = _activeChallenges[i];
+                final c = _challenges[i];
                 final color = Color(c['color'] as int);
                 return _ChallengeCard(
                   title: c['title'] as String,

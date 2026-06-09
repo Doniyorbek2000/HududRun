@@ -72,9 +72,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     // 4 actual content screens (no FAB slot needed in list)
     final screenList = <Widget>[
-      const MapScreen(),
+      MapScreen(apiService: widget.apiService),
       LeaderboardScreen(apiService: widget.apiService),
-      const ChallengesScreen(),
+      ChallengesScreen(apiService: widget.apiService),
       const TrophyRoomScreen(),
     ];
 

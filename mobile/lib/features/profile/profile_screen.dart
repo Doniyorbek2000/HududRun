@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../api_service.dart';
 import '../../models/user.dart';
 
 class ProfileScreen extends StatelessWidget {
   final User user;
+  final ApiService? apiService;
 
-  const ProfileScreen({super.key, required this.user});
+  const ProfileScreen({super.key, required this.user, this.apiService});
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,8 @@ class ProfileScreen extends StatelessWidget {
           _StatTile(label: 'Territory owned', value: '6 km²'),
           _StatTile(label: 'XP', value: user.xp.toString()),
           _StatTile(label: 'Level', value: user.level.toString()),
+          const SizedBox(height: 16),
+          _TerritoryStatsCard(),
           const SizedBox(height: 16),
           const _BadgeRow(),
           const SizedBox(height: 24),
@@ -174,6 +178,71 @@ class _BadgeChip extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TerritoryStatsCard extends StatelessWidget {
+  const _TerritoryStatsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0D1D34),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF2E436C)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text(
+            'Territory Stats',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _TerritoryStatItem(label: 'Hududlar', value: '0 hudud'),
+              _TerritoryStatItem(label: 'Maydon', value: '0.0 km²'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TerritoryStatItem extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _TerritoryStatItem({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white54, fontSize: 12),
+        ),
+      ],
     );
   }
 }

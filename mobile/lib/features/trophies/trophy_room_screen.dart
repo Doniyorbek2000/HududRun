@@ -18,6 +18,7 @@ class _TrophyRoomScreenState extends State<TrophyRoomScreen>
   late Animation<double> _featuredGlowAnim;
 
   int _selectedTab = 0;
+  bool _isLoading = true;
 
   static const List<String> _tabs = ['Badjlar', 'Kuboklar', 'Maxsus', 'Mavsumiy'];
 
@@ -118,6 +119,10 @@ class _TrophyRoomScreenState extends State<TrophyRoomScreen>
     _featuredGlowAnim = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(parent: _featuredController, curve: Curves.easeInOut),
     );
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) setState(() => _isLoading = false);
+    });
   }
 
   @override
@@ -136,6 +141,13 @@ class _TrophyRoomScreenState extends State<TrophyRoomScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
