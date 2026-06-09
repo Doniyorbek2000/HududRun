@@ -425,7 +425,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(int entryCount) {
     // Show current user's approximate rank at bottom
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -459,12 +459,195 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
             ),
           ),
           Text(
-            '#${_entries.length + 1}',
+            '#${entryCount + 1}',
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w800,
               fontSize: 16,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WeeklyPodiumEntry extends StatelessWidget {
+  final Map<String, dynamic> entry;
+  final int rank;
+  final Color medalColor;
+  final double size;
+  final double height;
+  final bool showCrown;
+
+  const _WeeklyPodiumEntry({
+    required this.entry,
+    required this.rank,
+    required this.medalColor,
+    required this.size,
+    required this.height,
+    this.showCrown = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final username = entry['username'] as String? ?? 'User';
+    final weeklyDistance = (entry['weeklyDistance'] as num?)?.toDouble() ?? 0.0;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (showCrown)
+          const Icon(Icons.emoji_events, color: Color(0xFFFFD700), size: 24),
+        const SizedBox(height: 4),
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [medalColor.withOpacity(0.3), medalColor.withOpacity(0.1)],
+            ),
+            border: Border.all(color: medalColor, width: 2.5),
+          ),
+          child: Center(
+            child: Text(
+              username.substring(0, 1).toUpperCase(),
+              style: TextStyle(
+                color: medalColor,
+                fontSize: size * 0.35,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          username.length > 8 ? '${username.substring(0, 8)}..' : username,
+          style: const TextStyle(
+            color: AppColors.onSurface,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          '${weeklyDistance.toStringAsFixed(1)} km',
+          style: TextStyle(color: medalColor, fontSize: 11),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          width: size + 10,
+          height: height,
+          decoration: BoxDecoration(
+            color: medalColor.withOpacity(0.15),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+          ),
+          child: Center(
+            child: Text(
+              '#$rank',
+              style: TextStyle(
+                color: medalColor,
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _WeeklyLeaderboardRow extends StatelessWidget {
+  final Map<String, dynamic> entry;
+  final int rank;
+
+  const _WeeklyLeaderboardRow({required this.entry, required this.rank});
+
+  @override
+  Widget build(BuildContext context) {
+    final username = entry['username'] as String? ?? 'User';
+    final weeklyDistance = (entry['weeklyDistance'] as num?)?.toDouble() ?? 0.0;
+    final runCount = entry['runCount'] as int? ?? 0;
+    final level = entry['level'] as int? ?? 1;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E).withOpacity(0.6),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withOpacity(0.07)),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 28,
+            child: Text(
+              '#$rank',
+              style: const TextStyle(
+                color: AppColors.outline,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: AppColors.surfaceContainerHigh,
+            child: Text(
+              username.substring(0, 1).toUpperCase(),
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  username,
+                  style: const TextStyle(
+                    color: AppColors.onSurface,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Daraja $level · $runCount yugurish',
+                  style: const TextStyle(
+                    color: AppColors.onSurfaceVariant,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${weeklyDistance.toStringAsFixed(1)} km',
+                style: const TextStyle(
+                  color: AppColors.secondary,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 15,
+                ),
+              ),
+              const Text(
+                'hafta',
+                style: TextStyle(
+                  color: AppColors.outline,
+                  fontSize: 11,
+                ),
+              ),
+            ],
           ),
         ],
       ),
