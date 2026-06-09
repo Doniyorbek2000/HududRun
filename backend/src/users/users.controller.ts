@@ -18,6 +18,11 @@ export class UsersController {
     return this.usersService.findOne(req.user.id);
   }
 
+  @Get('me/territory-stats')
+  getTerritoryStats(@Req() req: any) {
+    return this.usersService.getTerritoryStats(req.user.id);
+  }
+
   @Patch('me')
   updateProfile(@Req() req: any, @Body() dto: UpdateUserDto) {
     return this.usersService.update(req.user.id, dto);

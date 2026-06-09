@@ -7,40 +7,93 @@ export class TerritoriesService {
   constructor(private prisma: PrismaService) {}
 
   async listAll() {
-    return this.prisma.territory.findMany({
+    const territories = await this.prisma.territory.findMany({
       orderBy: { score: 'desc' },
+      include: {
+        owner: {
+          select: { id: true, username: true, color: true },
+        },
+      },
     });
+    return territories.map((t) => ({
+      id: t.id,
+      h3Index: t.h3Index,
+      ownerId: t.ownerId,
+      ownerUsername: t.owner?.username ?? null,
+      ownerColor: t.owner?.color ?? '#ADC6FF',
+      score: t.score,
+      area: t.area,
+      polygon: t.polygon,
+      lastActivity: t.lastActivity,
+    }));
   }
 
   async getByIndex(h3Index: string) {
-    const territory = await this.prisma.territory.findUnique({ where: { h3Index } });
-    if (!territory) {
-      throw new NotFoundException('Territory not found');
-    }
+    const territory = await this.prisma.territory.findUnique({
+      where: { h3Index },
+      include: { owner: { select: { id: true, username: true, color: true } } },
+    });
+    if (!territory) throw new NotFoundException('Territory not found');
     return territory;
   }
 
   async claim(userId: string, dto: ClaimTerritoryDto) {
     const existing = await this.prisma.territory.findUnique({ where: { h3Index: dto.h3Index } });
+    if (existing && existing.ownerId === userId) return existing;
 
-    if (existing && existing.ownerId === userId) {
-      return existing;
-    }
+    const previousOwner = existing?.ownerId ?? null;
 
-    // Territory can be stolen from any other user — core game mechanic
-    return this.prisma.territory.upsert({
+    const territory = await this.prisma.territory.upsert({
       where: { h3Index: dto.h3Index },
       update: {
         ownerId: userId,
         score: (existing?.score ?? 0) + 1,
+        polygon: dto.polygon ? (dto.polygon as any) : existing?.polygon,
+        area: dto.area ?? existing?.area ?? 0,
         lastActivity: new Date(),
       },
       create: {
         h3Index: dto.h3Index,
         ownerId: userId,
         score: 1,
+        polygon: dto.polygon ? (dto.polygon as any) : undefined,
+        area: dto.area ?? 0,
         lastActivity: new Date(),
       },
     });
+
+    // Create notification for previous owner if stolen
+    if (previousOwner && previousOwner !== userId) {
+      const thief = await this.prisma.user.findUnique({ where: { id: userId }, select: { username: true } });
+      await this.prisma.notification.create({
+        data: {
+          userId: previousOwner,
+          type: 'territory_stolen',
+          message: `${thief?.username ?? 'Kimdir'} sizning hududingizni tortib oldi!`,
+        },
+      });
+      // Give XP to the thief
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { xp: { increment: 50 } },
+      });
+    } else if (!previousOwner) {
+      // First capture XP
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { xp: { increment: 20 } },
+      });
+    }
+
+    return territory;
+  }
+
+  async getUserTerritoryStats(userId: string) {
+    const territories = await this.prisma.territory.findMany({
+      where: { ownerId: userId },
+    });
+    const totalArea = territories.reduce((sum, t) => sum + (t.area ?? 0), 0);
+    const count = territories.length;
+    return { count, totalArea };
   }
 }

@@ -12,6 +12,12 @@ export class TerritoriesController {
     return this.territoriesService.listAll();
   }
 
+  @Get('my/stats')
+  @UseGuards(JwtAuthGuard)
+  myStats(@Req() req: any) {
+    return this.territoriesService.getUserTerritoryStats(req.user.id);
+  }
+
   @Get(':h3Index')
   getTerritory(@Param('h3Index') h3Index: string) {
     return this.territoriesService.getByIndex(h3Index);

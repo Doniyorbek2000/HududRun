@@ -15,6 +15,7 @@ model User {
   username  String   @unique
   phone     String?  @unique
   password  String
+  color     String   @default("#ADC6FF")
   level     Int      @default(1)
   xp        Int      @default(0)
   isPremium Boolean  @default(false)
@@ -50,6 +51,8 @@ model Territory {
   h3Index  String  @unique
   ownerId  String?
   score    Float   @default(0)
+  polygon  Json?
+  area     Float?  @default(0)
   lastActivity DateTime?
 
   owner User? @relation(fields: [ownerId], references: [id], onDelete: SetNull)

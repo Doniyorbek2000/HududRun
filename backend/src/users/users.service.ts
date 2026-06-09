@@ -40,6 +40,7 @@ export class UsersService {
         id: true,
         username: true,
         phone: true,
+        color: true,
         level: true,
         xp: true,
         isPremium: true,
@@ -62,6 +63,7 @@ export class UsersService {
         id: true,
         username: true,
         phone: true,
+        color: true,
         level: true,
         xp: true,
         isPremium: true,
@@ -69,5 +71,15 @@ export class UsersService {
         updatedAt: true,
       },
     });
+  }
+
+  async getTerritoryStats(userId: string) {
+    const territories = await this.prisma.territory.findMany({ where: { ownerId: userId } });
+    const totalArea = territories.reduce((sum, t) => sum + (t.area ?? 0), 0);
+    return {
+      count: territories.length,
+      totalAreaKm2: Math.round(totalArea * 100) / 100,
+      xp: (await this.prisma.user.findUnique({ where: { id: userId }, select: { xp: true } }))?.xp ?? 0,
+    };
   }
 }

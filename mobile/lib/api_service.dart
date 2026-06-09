@@ -124,9 +124,20 @@ class ApiService {
   // ── Challenges ───────────────────────────────────────────────────────────
 
   Future<List<Map<String, dynamic>>> fetchChallenges() async {
-    final response = await _authenticatedGet('/challenges/me');
-    final body = jsonDecode(response.body) as List;
-    return body.cast<Map<String, dynamic>>();
+    try {
+      return await _authenticatedGetList('/challenges/me');
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> _authenticatedGetList(String path) async {
+    final response = await _authenticatedGet(path);
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.cast<Map<String, dynamic>>();
+    }
+    return [];
   }
 
   // ── Friends ──────────────────────────────────────────────────────────────

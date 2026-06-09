@@ -20,8 +20,15 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const userCount = await this.prisma.user.count();
+    const colorPalette = [
+      '#7C3AED', '#2563EB', '#059669', '#D97706',
+      '#DC2626', '#DB2777', '#0891B2', '#F59E0B',
+      '#10B981', '#6366F1', '#EF4444', '#8B5CF6',
+    ];
+    const color = colorPalette[userCount % colorPalette.length];
     const user = await this.prisma.user.create({
-      data: { username, phone, password: hashedPassword },
+      data: { username, phone, password: hashedPassword, color },
     });
     return this.generateTokens(user.id);
   }
