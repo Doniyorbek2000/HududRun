@@ -73,6 +73,88 @@ class ApiService {
     await clearTokens();
   }
 
+  // ── Leaderboard ──────────────────────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> fetchLeaderboard() async {
+    final response = await _authenticatedGet('/users/leaderboard');
+    final body = jsonDecode(response.body) as List;
+    return body.cast<Map<String, dynamic>>();
+  }
+
+  // ── Activities ───────────────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> saveActivity({
+    required double distance,
+    required int duration,
+    required DateTime startTime,
+    required DateTime endTime,
+    List<Map<String, dynamic>>? route,
+  }) async {
+    final response = await _authenticatedPost('/activities', {
+      'distance': distance,
+      'duration': duration,
+      'startTime': startTime.toIso8601String(),
+      'endTime': endTime.toIso8601String(),
+      if (route != null) 'route': route,
+    });
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchActivities() async {
+    final response = await _authenticatedGet('/activities/me');
+    final body = jsonDecode(response.body) as List;
+    return body.cast<Map<String, dynamic>>();
+  }
+
+  // ── Territories ──────────────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> claimTerritory(String h3Index) async {
+    final response = await _authenticatedPost('/territories/claim', {
+      'h3Index': h3Index,
+    });
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchTerritories() async {
+    final response = await _authenticatedGet('/territories');
+    final body = jsonDecode(response.body) as List;
+    return body.cast<Map<String, dynamic>>();
+  }
+
+  // ── Challenges ───────────────────────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> fetchChallenges() async {
+    final response = await _authenticatedGet('/challenges/me');
+    final body = jsonDecode(response.body) as List;
+    return body.cast<Map<String, dynamic>>();
+  }
+
+  // ── Friends ──────────────────────────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> fetchFriends() async {
+    final response = await _authenticatedGet('/friends');
+    final body = jsonDecode(response.body) as List;
+    return body.cast<Map<String, dynamic>>();
+  }
+
+  // ── Authenticated POST ────────────────────────────────────────────────────
+
+  Future<http.Response> _authenticatedPost(
+    String path,
+    Map<String, dynamic> body,
+  ) async {
+    final response = await _withAuth((headers) async {
+      final uri = Uri.parse('$baseUrl$path');
+      return http.post(
+        uri,
+        headers: headers,
+        body: jsonEncode(body),
+      );
+    });
+    _throwOnError(response);
+    return response;
+  }
+
   Future<http.Response> _post(
     String path,
     Map<String, dynamic> body, {

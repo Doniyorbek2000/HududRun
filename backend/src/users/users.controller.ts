@@ -8,6 +8,11 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @Get('leaderboard')
+  getLeaderboard() {
+    return this.usersService.getLeaderboard();
+  }
+
   @Get('me')
   getProfile(@Req() req: any) {
     return this.usersService.findOne(req.user.id);

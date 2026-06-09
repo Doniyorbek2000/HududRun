@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { ClaimTerritoryDto } from './dto/claim-territory.dto';
 
@@ -22,23 +22,23 @@ export class TerritoriesService {
 
   async claim(userId: string, dto: ClaimTerritoryDto) {
     const existing = await this.prisma.territory.findUnique({ where: { h3Index: dto.h3Index } });
+
     if (existing && existing.ownerId === userId) {
       return existing;
     }
 
-    if (existing && existing.ownerId) {
-      throw new ConflictException('Territory already claimed');
-    }
-
+    // Territory can be stolen from any other user — core game mechanic
     return this.prisma.territory.upsert({
       where: { h3Index: dto.h3Index },
       update: {
         ownerId: userId,
+        score: (existing?.score ?? 0) + 1,
         lastActivity: new Date(),
       },
       create: {
         h3Index: dto.h3Index,
         ownerId: userId,
+        score: 1,
         lastActivity: new Date(),
       },
     });

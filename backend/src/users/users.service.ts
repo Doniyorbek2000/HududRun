@@ -6,6 +6,33 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
+  async getLeaderboard() {
+    const users = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        level: true,
+        xp: true,
+        isPremium: true,
+        _count: {
+          select: { territories: true },
+        },
+      },
+      orderBy: { xp: 'desc' },
+      take: 50,
+    });
+
+    return users.map((u, index) => ({
+      rank: index + 1,
+      id: u.id,
+      username: u.username,
+      level: u.level,
+      xp: u.xp,
+      isPremium: u.isPremium,
+      territoryCount: u._count.territories,
+    }));
+  }
+
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
