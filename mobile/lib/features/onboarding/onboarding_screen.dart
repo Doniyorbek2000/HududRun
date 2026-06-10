@@ -1,4 +1,7 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
+
+import '../../theme_colors.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback onFinish;
@@ -57,7 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF041122), Color(0xFF111E3B)],
+            colors: AppColors.backgroundGradient,
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -76,16 +79,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     const Text(
                       'HududRun',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.onSurface,
                         fontSize: 18,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
+                        fontFamily: 'Montserrat',
                       ),
                     ),
                     TextButton(
                       onPressed: widget.onFinish,
                       child: const Text(
-                        'Skip',
-                        style: TextStyle(color: Colors.white70),
+                        "O'tkazib yuborish",
+                        style: TextStyle(color: AppColors.onSurfaceVariant),
                       ),
                     ),
                   ],
@@ -113,11 +117,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(32),
                               gradient: const LinearGradient(
-                                colors: [Color(0xFF3544B1), Color(0xFF1B2A5C)],
+                                colors: AppColors.conquestGradient,
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
-                              boxShadow: [
-                                const BoxShadow(
-                                  color: Color.fromRGBO(0, 0, 0, 0.3),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0x4DFE6B00),
                                   blurRadius: 30,
                                   offset: Offset(0, 16),
                                 ),
@@ -136,9 +142,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             slide.title,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.onSurface,
                               fontSize: 28,
                               fontWeight: FontWeight.w800,
+                              fontFamily: 'Montserrat',
                             ),
                           ),
                           const SizedBox(height: 18),
@@ -146,7 +153,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             slide.description,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              color: Color(0xFFB0BEE5),
+                              color: AppColors.onSurfaceVariant,
                               fontSize: 16,
                               height: 1.6,
                             ),
@@ -175,30 +182,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           width: _activePage == index ? 24 : 10,
                           decoration: BoxDecoration(
                             color: _activePage == index
-                                ? Colors.white
+                                ? AppColors.primary
                                 : Colors.white24,
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: _onNext,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C7BFF),
+                    GestureDetector(
+                      onTap: _onNext,
+                      child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
+                          horizontal: 28,
                           vertical: 14,
                         ),
-                        shape: RoundedRectangleBorder(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: AppColors.conquestGradient,
+                          ),
                           borderRadius: BorderRadius.circular(18),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x4DFE6B00),
+                              blurRadius: 12,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
                         ),
-                      ),
-                      child: Text(
-                        _activePage == _slides.length - 1 ? 'Start' : 'Next',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                        child: Text(
+                          _activePage == _slides.length - 1
+                              ? 'Boshlash'
+                              : 'Keyingisi',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                     ),
