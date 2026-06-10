@@ -1,11 +1,14 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 
+import '../../api_service.dart';
 import '../../theme_colors.dart';
+import 'squad_war_screen.dart';
 import 'team_achievements_screen.dart';
 
 class SquadSettingsScreen extends StatefulWidget {
-  const SquadSettingsScreen({super.key});
+  final ApiService apiService;
+  const SquadSettingsScreen({super.key, required this.apiService});
 
   @override
   State<SquadSettingsScreen> createState() => _SquadSettingsScreenState();
@@ -57,6 +60,13 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.local_fire_department_outlined, color: Color(0xFFFE6B00)),
+            tooltip: 'Squad War',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => SquadWarScreen(apiService: widget.apiService)),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.emoji_events_outlined, color: AppColors.secondary),
             tooltip: 'Yutuqlar',

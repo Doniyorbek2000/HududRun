@@ -36,6 +36,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   String? _locationError;
   List<String> _stolenFromUsers = [];
   bool _showStolenBanner = false;
+  bool _showHeatmap = false;
 
   late AnimationController _pulseController;
   late Animation<double> _pulseAnim;
@@ -277,14 +278,19 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           userAgentPackageName: 'com.hududrun.app',
           maxZoom: 19,
         ),
-        // Existing territories
-        PolygonLayer(
-          polygons: _buildTerritoryPolygons(),
-        ),
-        // Owner avatar markers
-        MarkerLayer(
-          markers: _buildOwnerMarkers(),
-        ),
+        if (_showHeatmap)
+          // Heatmap of most-run zones (intensity by captured area)
+          CircleLayer(circles: _buildHeatmapCircles())
+        else ...[
+          // Existing territories
+          PolygonLayer(
+            polygons: _buildTerritoryPolygons(),
+          ),
+          // Owner avatar markers
+          MarkerLayer(
+            markers: _buildOwnerMarkers(),
+          ),
+        ],
         // Current run path
         if (_runPath.length > 1)
           PolylineLayer(
@@ -399,6 +405,51 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       ));
     }
     return polygons;
+  }
+
+  List<CircleMarker> _buildHeatmapCircles() {
+    final circles = <CircleMarker>[];
+    double maxArea = 0;
+    final centroids = <LatLng>[];
+    final areas = <double>[];
+
+    for (final territory in _territories) {
+      final rawPolygon = territory['polygon'];
+      if (rawPolygon == null) continue;
+      List<dynamic> points;
+      try {
+        points = rawPolygon as List<dynamic>;
+      } catch (_) {
+        continue;
+      }
+      if (points.length < 3) continue;
+
+      final latlngs = points.map<LatLng>((p) {
+        final map = p as Map<String, dynamic>;
+        return LatLng((map['lat'] as num).toDouble(), (map['lng'] as num).toDouble());
+      }).toList();
+
+      final area = (territory['area'] as num?)?.toDouble() ?? 0.01;
+      centroids.add(_polygonCentroid(latlngs));
+      areas.add(area);
+      if (area > maxArea) maxArea = area;
+    }
+
+    for (int i = 0; i < centroids.length; i++) {
+      final ratio = maxArea > 0 ? (areas[i] / maxArea).clamp(0.0, 1.0) : 0.0;
+      final color = Color.lerp(const Color(0xFFFFD54F), const Color(0xFFFF1744), ratio) ?? Colors.orange;
+      final radiusMeters = 60 + ratio * 200;
+
+      circles.add(CircleMarker(
+        point: centroids[i],
+        radius: radiusMeters,
+        useRadiusInMeter: true,
+        color: color.withOpacity(0.35),
+        borderColor: color.withOpacity(0.6),
+        borderStrokeWidth: 1.5,
+      ));
+    }
+    return circles;
   }
 
   Color _hexToColor(String hex) {
@@ -562,6 +613,12 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 color: AppColors.tertiary,
               ),
               const Spacer(),
+              _MapIconButton(
+                icon: Icons.local_fire_department,
+                active: _showHeatmap,
+                onTap: () => setState(() => _showHeatmap = !_showHeatmap),
+              ),
+              const SizedBox(width: 8),
               _MapIconButton(
                 icon: Icons.my_location,
                 onTap: () {
@@ -859,7 +916,8 @@ class _StatPill extends StatelessWidget {
 class _MapIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
-  const _MapIconButton({required this.icon, required this.onTap});
+  final bool active;
+  const _MapIconButton({required this.icon, required this.onTap, this.active = false});
 
   @override
   Widget build(BuildContext context) {
@@ -869,11 +927,15 @@ class _MapIconButton extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppColors.surfaceContainer.withOpacity(0.9),
+          color: active
+              ? const Color(0xFFFE6B00).withOpacity(0.25)
+              : AppColors.surfaceContainer.withOpacity(0.9),
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(
+            color: active ? const Color(0xFFFE6B00) : Colors.white.withOpacity(0.1),
+          ),
         ),
-        child: Icon(icon, color: AppColors.onSurface, size: 18),
+        child: Icon(icon, color: active ? const Color(0xFFFE6B00) : AppColors.onSurface, size: 18),
       ),
     );
   }

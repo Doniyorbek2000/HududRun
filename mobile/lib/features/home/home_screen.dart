@@ -154,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SquadSettingsScreen()),
+              MaterialPageRoute(builder: (_) => SquadSettingsScreen(apiService: widget.apiService)),
             ),
             icon: const Icon(Icons.group_outlined),
             tooltip: 'Jamoa',

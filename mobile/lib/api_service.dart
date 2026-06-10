@@ -122,6 +122,19 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> fetchCurrentWar() async {
+    final response = await _authenticatedGet('/squad-wars/current');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSquadWarHistory() async {
+    try {
+      return await _authenticatedGetList('/squad-wars/history');
+    } catch (_) {
+      return [];
+    }
+  }
+
   Future<Map<String, dynamic>> shieldTerritory(String h3Index) async {
     final response = await _authenticatedPost('/territories/shield', {'h3Index': h3Index});
     return jsonDecode(response.body) as Map<String, dynamic>;
@@ -280,6 +293,29 @@ class ApiService {
 
   Future<void> joinSquad(String squadId) async {
     await _authenticatedPost('/squads/$squadId/join', {});
+  }
+
+  // ── Payments ─────────────────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> createPayment(String plan, String provider) async {
+    final response = await _authenticatedPost('/payments', {
+      'plan': plan,
+      'provider': provider,
+    });
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> checkPaymentStatus(String paymentId) async {
+    final response = await _authenticatedGet('/payments/$paymentId/status');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPayments() async {
+    try {
+      return await _authenticatedGetList('/payments/me');
+    } catch (_) {
+      return [];
+    }
   }
 
   // ── Authenticated POST ────────────────────────────────────────────────────
