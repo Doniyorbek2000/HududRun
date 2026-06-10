@@ -10,6 +10,7 @@ import { FriendsModule } from './friends/friends.module';
 import { ChallengesModule } from './challenges/challenges.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SquadsModule } from './squads/squads.module';
+import { AdminModule } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -28,6 +29,7 @@ import { AppService } from './app.service';
     ChallengesModule,
     NotificationsModule,
     SquadsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

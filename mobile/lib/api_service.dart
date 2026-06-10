@@ -210,6 +210,26 @@ class ApiService {
     return body.cast<Map<String, dynamic>>();
   }
 
+  Future<void> sendFriendRequest(String targetUsername) async {
+    await _authenticatedPost('/friends/request', {'username': targetUsername});
+  }
+
+  Future<void> acceptFriendRequest(String friendId) async {
+    await _authenticatedPost('/friends/accept', {'friendId': friendId});
+  }
+
+  Future<void> removeFriend(String friendId) async {
+    await _authenticatedPost('/friends/remove', {'friendId': friendId});
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPendingRequests() async {
+    try {
+      return await _authenticatedGetList('/friends/pending');
+    } catch (_) {
+      return [];
+    }
+  }
+
   // ── Notifications ─────────────────────────────────────────────────────────
 
   Future<List<Map<String, dynamic>>> fetchNotifications() async {

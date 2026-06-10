@@ -6,6 +6,8 @@ import '../../api_service.dart';
 import '../../models/user.dart';
 import '../../theme_colors.dart';
 import '../../l10n/countries.dart';
+import '../friends/friends_screen.dart';
+import '../run/run_history_screen.dart';
 import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -168,18 +170,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 20),
 
           // ── Info cards ───────────────────────────────────────────────────
+          if (widget.apiService != null) ...[
+            _InfoCard(
+              title: "Do'stlar",
+              description: "Do'stlaringizni ko'ring va yangi do'stlar qo'shing.",
+              icon: Icons.people_outline,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FriendsScreen(apiService: widget.apiService!),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _InfoCard(
+              title: 'Yugurish tarixi',
+              description:
+                  "O'tgan yugurishlaringiz, statistikangiz va haftalik grafikni ko'ring.",
+              icon: Icons.history,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => RunHistoryScreen(apiService: widget.apiService!),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           const _InfoCard(
             title: 'Active mission',
             description:
                 'Secure contested zone near your current path to earn bonus XP and power.',
             icon: Icons.track_changes,
-          ),
-          const SizedBox(height: 16),
-          const _InfoCard(
-            title: 'Match history',
-            description:
-                'Last run: +2.1 km² territory, 860 XP, 1st place in zone challenge.',
-            icon: Icons.history,
           ),
         ],
       ),
@@ -423,16 +445,18 @@ class _InfoCard extends StatelessWidget {
   final String title;
   final String description;
   final IconData icon;
+  final VoidCallback? onTap;
 
   const _InfoCard({
     required this.title,
     required this.description,
     required this.icon,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final card = Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(24),
@@ -474,8 +498,17 @@ class _InfoCard extends StatelessWidget {
               ],
             ),
           ),
+          if (onTap != null)
+            const Icon(Icons.chevron_right, color: AppColors.outline),
         ],
       ),
+    );
+
+    if (onTap == null) return card;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(24),
+      child: card,
     );
   }
 }
