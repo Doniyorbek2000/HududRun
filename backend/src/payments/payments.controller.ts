@@ -1,20 +1,47 @@
-import { Controller, Get, Post, Body, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Headers, HttpCode, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 
 @Controller('payments')
-@UseGuards(JwtAuthGuard)
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  createPayment(@Req() req: any, @Body() dto: CreatePaymentDto) {
+  create(@Req() req: any, @Body() dto: CreatePaymentDto) {
     return this.paymentsService.create(req.user.id, dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   getPayments(@Req() req: any) {
     return this.paymentsService.findByUser(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/status')
+  getStatus(@Req() req: any, @Param('id') id: string) {
+    return this.paymentsService.getStatus(req.user.id, id);
+  }
+
+  // Payme JSON-RPC merchant webhook (authenticated via Basic auth header, not JWT)
+  @Post('payme/webhook')
+  @HttpCode(200)
+  paymeWebhook(@Body() body: any, @Headers('authorization') authHeader: string) {
+    return this.paymentsService.handlePaymeWebhook(body, authHeader);
+  }
+
+  // Click Prepare/Complete webhooks (authenticated via signature, not JWT)
+  @Post('click/prepare')
+  @HttpCode(200)
+  clickPrepare(@Body() body: any) {
+    return this.paymentsService.handleClickPrepare(body);
+  }
+
+  @Post('click/complete')
+  @HttpCode(200)
+  clickComplete(@Body() body: any) {
+    return this.paymentsService.handleClickComplete(body);
   }
 }

@@ -1,10 +1,16 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsString } from 'class-validator';
+
+export const PAYMENT_PLANS = ['monthly', 'yearly'] as const;
+export const PAYMENT_PROVIDERS = ['payme', 'click'] as const;
 
 export class CreatePaymentDto {
-  @IsNumber()
-  amount: number;
+  @IsString()
+  @IsNotEmpty()
+  @IsIn(PAYMENT_PLANS)
+  plan: string;
 
   @IsString()
   @IsNotEmpty()
-  status: string;
+  @IsIn(PAYMENT_PROVIDERS)
+  provider: string;
 }

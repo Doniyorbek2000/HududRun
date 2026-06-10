@@ -1,0 +1,7 @@
+ALTER TABLE "Payment" ADD COLUMN IF NOT EXISTS "provider" TEXT NOT NULL DEFAULT 'payme';
+ALTER TABLE "Payment" ADD COLUMN IF NOT EXISTS "plan" TEXT NOT NULL DEFAULT 'monthly';
+ALTER TABLE "Payment" ADD COLUMN IF NOT EXISTS "externalTransactionId" TEXT;
+ALTER TABLE "Payment" ADD COLUMN IF NOT EXISTS "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE "Payment" ALTER COLUMN "status" SET DEFAULT 'pending';
+
+CREATE UNIQUE INDEX IF NOT EXISTS "Payment_externalTransactionId_key" ON "Payment"("externalTransactionId");

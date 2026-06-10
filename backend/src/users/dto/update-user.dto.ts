@@ -1,5 +1,9 @@
-import { IsOptional, IsString, IsBoolean, IsInt, Min, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
+// Note: isPremium, xp and level are intentionally NOT exposed here.
+// Those fields must only change via server-side game logic (territory
+// capture, payments) or the dedicated admin endpoints - never via user
+// self-update, otherwise a user could grant themselves premium/XP directly.
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
@@ -32,18 +36,4 @@ export class UpdateUserDto {
   @IsString()
   @MaxLength(100)
   district?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isPremium?: boolean;
-
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  xp?: number;
-
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  level?: number;
 }

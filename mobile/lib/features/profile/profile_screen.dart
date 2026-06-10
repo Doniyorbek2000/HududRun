@@ -7,6 +7,7 @@ import '../../models/user.dart';
 import '../../theme_colors.dart';
 import '../../l10n/countries.dart';
 import '../friends/friends_screen.dart';
+import '../premium/premium_screen.dart';
 import '../run/run_history_screen.dart';
 import 'edit_profile_screen.dart';
 
@@ -192,6 +193,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => RunHistoryScreen(apiService: widget.apiService!),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _InfoCard(
+              title: 'Premium',
+              description: _user.isPremium
+                  ? "Premium faol. Imtiyozlaringizni ko'ring."
+                  : "Hudud qalqoni, 2x XP va boshqa imtiyozlarni oching.",
+              icon: Icons.workspace_premium_outlined,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => Scaffold(
+                    backgroundColor: AppColors.background,
+                    appBar: AppBar(
+                      backgroundColor: AppColors.background,
+                      foregroundColor: AppColors.onSurface,
+                      elevation: 0,
+                      title: const Text(
+                        'PREMIUM',
+                        style: TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ),
+                    body: PremiumScreen(
+                      apiService: widget.apiService!,
+                      user: _user,
+                      onUpdated: _onProfileUpdated,
+                    ),
+                  ),
                 ),
               ),
             ),
