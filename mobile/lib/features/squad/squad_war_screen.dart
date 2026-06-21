@@ -20,6 +20,7 @@ class _SquadWarScreenState extends State<SquadWarScreen>
   bool _loadingCurrent = true;
   bool _loadingHistory = true;
   bool _historyLoaded = false;
+  bool _usingMockData = false;
   Timer? _ticker;
   Duration _remaining = Duration.zero;
 
@@ -63,6 +64,7 @@ class _SquadWarScreenState extends State<SquadWarScreen>
           _currentWar = _mockCurrentWar();
           _remaining = const Duration(days: 3, hours: 6, minutes: 12);
           _loadingCurrent = false;
+          _usingMockData = true;
         });
       }
     }
@@ -85,6 +87,7 @@ class _SquadWarScreenState extends State<SquadWarScreen>
           _history = _mockHistory();
           _loadingHistory = false;
           _historyLoaded = true;
+          _usingMockData = true;
         });
       }
     }
@@ -115,11 +118,29 @@ class _SquadWarScreenState extends State<SquadWarScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          _buildCurrentTab(),
-          _buildHistoryTab(),
+          if (_usingMockData)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: AppColors.outlineVariant,
+              child: Row(
+                children: const [
+                  Icon(Icons.cloud_off, color: AppColors.outline, size: 16),
+                  SizedBox(width: 8),
+                  Text("Oflayn rejim — namuna ma'lumotlari", style: TextStyle(color: AppColors.outline, fontSize: 12)),
+                ],
+              ),
+            ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildCurrentTab(),
+                _buildHistoryTab(),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -326,10 +347,10 @@ class _SquadWarRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isMedal ? color.withOpacity(0.08) : const Color(0xFF1E1E1E).withOpacity(0.5),
+        color: isMedal ? color.withOpacity(0.08) : AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isMedal ? color.withOpacity(0.35) : Colors.white.withOpacity(0.05),
+          color: isMedal ? color.withOpacity(0.35) : AppColors.outlineVariant,
           width: isMedal ? 1.5 : 1,
         ),
       ),
@@ -392,9 +413,9 @@ class _WarHistoryCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E).withOpacity(0.6),
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.07)),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

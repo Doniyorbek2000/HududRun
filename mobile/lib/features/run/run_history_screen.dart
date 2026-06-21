@@ -101,7 +101,7 @@ class _RunHistoryScreenState extends State<RunHistoryScreen> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: AppColors.outlineVariant),
         boxShadow: const [BoxShadow(color: Color(0x33ADC6FF), blurRadius: 20, offset: Offset(0, 4))],
       ),
       child: Column(
@@ -115,7 +115,7 @@ class _RunHistoryScreenState extends State<RunHistoryScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          Divider(color: Colors.white.withOpacity(0.08)),
+          Divider(color: AppColors.outlineVariant),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -153,9 +153,9 @@ class _RunHistoryScreenState extends State<RunHistoryScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E).withOpacity(0.6),
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.07)),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,10 +222,10 @@ class _RunHistoryScreenState extends State<RunHistoryScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isLatest ? AppColors.primary.withOpacity(0.07) : const Color(0xFF1E1E1E).withOpacity(0.5),
+        color: isLatest ? AppColors.primary.withOpacity(0.07) : AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isLatest ? AppColors.primary.withOpacity(0.3) : Colors.white.withOpacity(0.05),
+          color: isLatest ? AppColors.primary.withOpacity(0.3) : AppColors.outlineVariant,
           width: isLatest ? 1.5 : 1,
         ),
       ),

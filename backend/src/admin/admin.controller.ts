@@ -5,6 +5,7 @@ import {
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AdminGuard } from '../guards/admin.guard';
 import { AdminService } from './admin.service';
+import { BroadcastNotificationDto } from './dto/broadcast-notification.dto';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AdminGuard)
@@ -28,7 +29,8 @@ export class AdminController {
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('search') search?: string,
   ) {
-    return this.adminService.getUsers(page, limit, search);
+    const safeLimit = Math.min(limit, 100);
+    return this.adminService.getUsers(page, safeLimit, search);
   }
 
   @Patch('users/:id')
@@ -80,7 +82,7 @@ export class AdminController {
 
   // Broadcast notification
   @Post('notify')
-  broadcastNotification(@Body() body: { message: string; type?: string }) {
-    return this.adminService.broadcastNotification(body.message, body.type);
+  broadcastNotification(@Body() dto: BroadcastNotificationDto) {
+    return this.adminService.broadcastNotification(dto.message, dto.type);
   }
 }

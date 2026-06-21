@@ -22,6 +22,7 @@ class _FriendsScreenState extends State<FriendsScreen>
   bool _adding = false;
   String? _addError;
   String? _addSuccess;
+  bool _usingMockData = false;
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _FriendsScreenState extends State<FriendsScreen>
       if (mounted) setState(() {
         _friends = _mockFriends();
         _loadingFriends = false;
+        _usingMockData = true;
       });
     }
   }
@@ -128,6 +130,18 @@ class _FriendsScreenState extends State<FriendsScreen>
       ),
       body: Column(
         children: [
+          if (_usingMockData)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: AppColors.outlineVariant,
+              child: Row(
+                children: const [
+                  Icon(Icons.cloud_off, color: AppColors.outline, size: 16),
+                  SizedBox(width: 8),
+                  Text("Oflayn rejim — namuna ma'lumotlari", style: TextStyle(color: AppColors.outline, fontSize: 12)),
+                ],
+              ),
+            ),
           // Add friend bar
           _buildAddFriendBar(),
           Expanded(
@@ -216,9 +230,9 @@ class _FriendsScreenState extends State<FriendsScreen>
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E).withOpacity(0.6),
+            color: AppColors.surfaceContainerLow,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withOpacity(0.07)),
+            border: Border.all(color: AppColors.outlineVariant),
           ),
           child: Row(
             children: [

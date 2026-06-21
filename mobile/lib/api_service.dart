@@ -291,6 +291,10 @@ class ApiService {
     await _authenticatedPost('/squads/$squadId/join', {});
   }
 
+  Future<void> leaveSquad(String squadId) async {
+    await _authenticatedDelete('/squads/$squadId/leave');
+  }
+
   // ── Payments ─────────────────────────────────────────────────────────────
 
   Future<Map<String, dynamic>> createPayment(String plan, String provider) async {
@@ -360,6 +364,15 @@ class ApiService {
       headers: mergedHeaders,
       body: jsonEncode(body),
     );
+    _throwOnError(response);
+    return response;
+  }
+
+  Future<http.Response> _authenticatedDelete(String path) async {
+    final response = await _withAuth((headers) async {
+      final uri = Uri.parse('$baseUrl$path');
+      return http.delete(uri, headers: headers);
+    });
     _throwOnError(response);
     return response;
   }

@@ -15,29 +15,36 @@ function currentWeekStart(now: Date): Date {
 export class SquadWarService {
   constructor(private prisma: PrismaService) {}
 
-  private async scoreSquad(squadId: string, start: Date, end: Date): Promise<number> {
-    const members = await this.prisma.squadMember.findMany({
-      where: { squadId },
-      select: { userId: true },
-    });
-    const userIds = members.map((m) => m.userId);
-    if (userIds.length === 0) return 0;
-
-    const result = await this.prisma.activity.aggregate({
-      where: { userId: { in: userIds }, createdAt: { gte: start, lt: end } },
-      _sum: { distance: true },
-    });
-    return Math.round((result._sum.distance ?? 0) * 100) / 100;
-  }
-
   private async finalizeWar(warId: string, startDate: Date, endDate: Date) {
     const participants = await this.prisma.squadWarParticipant.findMany({ where: { warId } });
+    const squadIds = participants.map(p => p.squadId);
+
+    const allMembers = await this.prisma.squadMember.findMany({
+      where: { squadId: { in: squadIds } },
+      select: { squadId: true, userId: true },
+    });
+
+    const allUserIds = allMembers.map(m => m.userId);
+    const activities = allUserIds.length > 0
+      ? await this.prisma.activity.groupBy({
+          by: ['userId'],
+          where: { userId: { in: allUserIds }, createdAt: { gte: startDate, lt: endDate } },
+          _sum: { distance: true },
+        })
+      : [];
+
+    const distanceByUser = new Map(activities.map(a => [a.userId, a._sum.distance ?? 0]));
+    const squadScores = new Map<string, number>();
+    for (const member of allMembers) {
+      const current = squadScores.get(member.squadId) ?? 0;
+      squadScores.set(member.squadId, current + (distanceByUser.get(member.userId) ?? 0));
+    }
 
     let winnerId: string | null = null;
     let topScore = -1;
 
     for (const p of participants) {
-      const score = await this.scoreSquad(p.squadId, startDate, endDate);
+      const score = Math.round((squadScores.get(p.squadId) ?? 0) * 100) / 100;
       await this.prisma.squadWarParticipant.update({
         where: { id: p.id },
         data: { score },
@@ -138,21 +145,54 @@ export class SquadWarService {
   private async buildWarResponse(war: { id: string; startDate: Date; endDate: Date; status: string }) {
     const participants = await this.prisma.squadWarParticipant.findMany({
       where: { warId: war.id },
-      include: { squad: { select: { id: true, name: true, tag: true, color: true } } },
+      include: {
+        squad: {
+          select: { id: true, name: true, tag: true, color: true },
+        },
+      },
     });
 
-    const ranked = await Promise.all(
-      participants.map(async (p) => ({
+    const squadIds = participants.map(p => p.squadId);
+
+    // Get all members for all squads in one query
+    const allMembers = await this.prisma.squadMember.findMany({
+      where: { squadId: { in: squadIds } },
+      select: { squadId: true, userId: true },
+    });
+
+    const allUserIds = allMembers.map(m => m.userId);
+
+    // Get all activities for all users in one query
+    const activities = allUserIds.length > 0
+      ? await this.prisma.activity.groupBy({
+          by: ['userId'],
+          where: {
+            userId: { in: allUserIds },
+            createdAt: { gte: war.startDate, lt: new Date() },
+          },
+          _sum: { distance: true },
+        })
+      : [];
+
+    const distanceByUser = new Map(activities.map(a => [a.userId, a._sum.distance ?? 0]));
+
+    // Build a map of squadId -> total distance
+    const squadScores = new Map<string, number>();
+    for (const member of allMembers) {
+      const current = squadScores.get(member.squadId) ?? 0;
+      squadScores.set(member.squadId, current + (distanceByUser.get(member.userId) ?? 0));
+    }
+
+    const ranked = participants
+      .map(p => ({
         squadId: p.squadId,
         name: p.squad.name,
         tag: p.squad.tag,
         color: p.squad.color,
-        score: await this.scoreSquad(p.squadId, war.startDate, new Date()),
-      })),
-    );
-
-    ranked.sort((a, b) => b.score - a.score);
-    const withRank = ranked.map((p, i) => ({ ...p, rank: i + 1 }));
+        score: Math.round((squadScores.get(p.squadId) ?? 0) * 100) / 100,
+      }))
+      .sort((a, b) => b.score - a.score)
+      .map((p, i) => ({ ...p, rank: i + 1 }));
 
     return {
       id: war.id,
@@ -160,7 +200,7 @@ export class SquadWarService {
       endDate: war.endDate,
       status: war.status,
       timeRemainingMs: Math.max(0, war.endDate.getTime() - Date.now()),
-      participants: withRank,
+      participants: ranked,
     };
   }
 }

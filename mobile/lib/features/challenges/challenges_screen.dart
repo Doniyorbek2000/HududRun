@@ -153,7 +153,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
             const SizedBox(
               height: 180,
               child: Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(color: AppColors.primary),
               ),
             )
           else
@@ -281,7 +281,7 @@ class _ChallengeCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  isHot ? 'HOT' : 'Aktiv',
+                  isHot ? 'ISSIQ' : 'Aktiv',
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -294,7 +294,7 @@ class _ChallengeCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Progress',
+              const Text('Jarayon',
                   style: TextStyle(
                       fontSize: 11,
                       color: AppColors.onSurfaceVariant)),

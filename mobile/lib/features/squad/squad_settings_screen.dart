@@ -123,9 +123,9 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E).withOpacity(0.6),
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Column(
         children: [
@@ -197,11 +197,11 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
       hintStyle: const TextStyle(color: AppColors.outline),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.white.withOpacity(0.05)),
+        borderSide: BorderSide(color: AppColors.outlineVariant),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.white.withOpacity(0.05)),
+        borderSide: BorderSide(color: AppColors.outlineVariant),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -230,9 +230,9 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
   Widget _buildPrivacySettings() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E).withOpacity(0.6),
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Column(
         children: [
@@ -242,7 +242,7 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
             value: _isPublic,
             onChanged: (v) => setState(() => _isPublic = v),
           ),
-          Divider(color: Colors.white.withOpacity(0.05), height: 1),
+          Divider(color: AppColors.outlineVariant, height: 1),
           _ToggleRow(
             title: 'Qo\'shilish so\'rovlari',
             subtitle: 'Yangi a\'zolar ruxsat so\'rashadi',
@@ -257,9 +257,9 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
   Widget _buildMembersList() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E).withOpacity(0.6),
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Column(
         children: [
@@ -271,11 +271,11 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
               children: [
                 _MemberRow(member: member),
                 if (!isLast)
-                  Divider(color: Colors.white.withOpacity(0.05), height: 1),
+                  Divider(color: AppColors.outlineVariant, height: 1),
               ],
             );
           }),
-          Divider(color: Colors.white.withOpacity(0.05), height: 1),
+          Divider(color: AppColors.outlineVariant, height: 1),
           TextButton.icon(
             onPressed: () {},
             icon: const Icon(Icons.person_add, color: AppColors.primary, size: 18),
@@ -295,9 +295,9 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
   Widget _buildNotificationSettings() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E).withOpacity(0.6),
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Column(
         children: [
@@ -307,14 +307,14 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
             value: _notifyNewMember,
             onChanged: (v) => setState(() => _notifyNewMember = v),
           ),
-          Divider(color: Colors.white.withOpacity(0.05), height: 1),
+          Divider(color: AppColors.outlineVariant, height: 1),
           _ToggleRow(
             title: 'Yutuqlar',
             subtitle: 'Jamoaviy yutuqlar haqida',
             value: _notifyAchievement,
             onChanged: (v) => setState(() => _notifyAchievement = v),
           ),
-          Divider(color: Colors.white.withOpacity(0.05), height: 1),
+          Divider(color: AppColors.outlineVariant, height: 1),
           _ToggleRow(
             title: 'Musobaqalar',
             subtitle: 'Yangi musobaqa boshlanganida',

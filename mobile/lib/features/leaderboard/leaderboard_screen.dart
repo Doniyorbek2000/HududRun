@@ -389,9 +389,9 @@ class _LeaderRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E).withOpacity(0.5),
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Row(
         children: [
@@ -450,10 +450,10 @@ class _SquadRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isMedal ? squadColor.withOpacity(0.08) : const Color(0xFF1E1E1E).withOpacity(0.5),
+        color: isMedal ? squadColor.withOpacity(0.08) : AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isMedal ? squadColor.withOpacity(0.35) : Colors.white.withOpacity(0.05),
+          color: isMedal ? squadColor.withOpacity(0.35) : AppColors.outlineVariant,
           width: isMedal ? 1.5 : 1,
         ),
       ),
@@ -523,9 +523,9 @@ class _WeeklyRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isMedal ? userColor.withOpacity(0.08) : const Color(0xFF1E1E1E).withOpacity(0.5),
+        color: isMedal ? userColor.withOpacity(0.08) : AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: isMedal ? userColor.withOpacity(0.3) : Colors.white.withOpacity(0.05)),
+        border: Border.all(color: isMedal ? userColor.withOpacity(0.3) : AppColors.outlineVariant),
       ),
       child: Row(
         children: [
