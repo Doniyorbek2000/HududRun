@@ -353,7 +353,7 @@ class _SquadWarRow extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                tag.isNotEmpty ? tag.substring(0, tag.length.clamp(0, 2)) : name.substring(0, 1),
+                tag.isNotEmpty ? tag.substring(0, tag.length.clamp(0, 2)) : (name.isNotEmpty ? name[0] : 'S'),
                 style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 14),
               ),
             ),

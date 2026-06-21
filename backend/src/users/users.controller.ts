@@ -9,7 +9,6 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('leaderboard')
-  @UseGuards(JwtAuthGuard)
   getLeaderboard(
     @Query('country') country?: string,
     @Query('region') region?: string,
@@ -21,7 +20,6 @@ export class UsersController {
   }
 
   @Get('leaderboard/squads')
-  @UseGuards(JwtAuthGuard)
   getSquadLeaderboard() {
     return this.usersService.getSquadLeaderboard();
   }

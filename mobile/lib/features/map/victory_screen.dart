@@ -1,8 +1,8 @@
 // ignore_for_file: deprecated_member_use
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../../home/home_screen.dart';
-import '../../../theme.dart';
+import '../home/home_screen.dart';
+import '../../theme_colors.dart';
 
 class VictoryScreen extends StatefulWidget {
   final double conqueredAreaKm2;
@@ -64,7 +64,7 @@ class _VictoryScreenState extends State<VictoryScreen>
     final progress = (widget.totalTerritoryKm2 / 20).clamp(0.0, 1.0);
 
     return Scaffold(
-      backgroundColor: HududRunTheme.background,
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
           // Background animated rays
@@ -85,7 +85,7 @@ class _VictoryScreenState extends State<VictoryScreen>
                   radius: 1.4,
                   colors: [
                     Colors.transparent,
-                    HududRunTheme.background.withOpacity(0.7),
+                    AppColors.background.withOpacity(0.7),
                   ],
                 ),
               ),
@@ -115,17 +115,17 @@ class _VictoryScreenState extends State<VictoryScreen>
                             height: 160,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: HududRunTheme.secondaryContainer
+                              color: AppColors.secondaryContainer
                                   .withOpacity(0.15 * _glowAnim.value),
                             ),
                           ),
                           Icon(
                             Icons.emoji_events,
                             size: 100,
-                            color: HududRunTheme.secondary,
+                            color: AppColors.secondary,
                             shadows: [
                               Shadow(
-                                color: HududRunTheme.secondary.withOpacity(
+                                color: AppColors.secondary.withOpacity(
                                     0.6 * _glowAnim.value),
                                 blurRadius: 30,
                               ),
@@ -163,7 +163,7 @@ class _VictoryScreenState extends State<VictoryScreen>
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: HududRunTheme.tertiary,
+                            color: AppColors.tertiary,
                           ),
                         ),
                       ],
@@ -203,7 +203,7 @@ class _VictoryScreenState extends State<VictoryScreen>
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,
-                                    color: HududRunTheme.outlineVariant,
+                                    color: AppColors.outlineVariant,
                                     letterSpacing: 1,
                                   ),
                                 ),
@@ -212,7 +212,7 @@ class _VictoryScreenState extends State<VictoryScreen>
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
-                                    color: HududRunTheme.tertiary,
+                                    color: AppColors.tertiary,
                                   ),
                                 ),
                               ],
@@ -223,9 +223,9 @@ class _VictoryScreenState extends State<VictoryScreen>
                               child: LinearProgressIndicator(
                                 value: progress,
                                 minHeight: 8,
-                                backgroundColor: HududRunTheme.surfaceVariant,
+                                backgroundColor: AppColors.surfaceVariant,
                                 valueColor: const AlwaysStoppedAnimation(
-                                  HududRunTheme.tertiary,
+                                  AppColors.tertiary,
                                 ),
                               ),
                             ),
@@ -248,11 +248,11 @@ class _VictoryScreenState extends State<VictoryScreen>
                           height: 60,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: HududRunTheme.tertiary,
+                            color: AppColors.tertiary,
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: HududRunTheme.tertiary.withOpacity(0.4),
+                                color: AppColors.tertiary.withOpacity(0.4),
                                 blurRadius: 20,
                                 spreadRadius: 2,
                               ),
@@ -304,7 +304,7 @@ class _StatRow extends StatelessWidget {
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: HududRunTheme.onSurfaceVariant,
+            color: AppColors.onSurfaceVariant,
             letterSpacing: 0.5,
           ),
         ),
@@ -313,7 +313,7 @@ class _StatRow extends StatelessWidget {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: HududRunTheme.onSurface,
+            color: AppColors.onSurface,
           ),
         ),
       ],

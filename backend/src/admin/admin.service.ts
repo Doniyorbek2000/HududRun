@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
@@ -59,6 +59,8 @@ export class AdminService {
   }
 
   async deleteUser(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
     await this.prisma.user.delete({ where: { id } });
     return { success: true };
   }
@@ -78,6 +80,8 @@ export class AdminService {
   }
 
   async deleteTerritory(id: string) {
+    const territory = await this.prisma.territory.findUnique({ where: { id } });
+    if (!territory) throw new NotFoundException('Territory not found');
     await this.prisma.territory.delete({ where: { id } });
     return { success: true };
   }
@@ -100,6 +104,8 @@ export class AdminService {
   }
 
   async deleteSquad(id: string) {
+    const squad = await this.prisma.squad.findUnique({ where: { id } });
+    if (!squad) throw new NotFoundException('Squad not found');
     await this.prisma.squad.delete({ where: { id } });
     return { success: true };
   }

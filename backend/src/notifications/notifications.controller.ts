@@ -19,7 +19,6 @@ export class NotificationsController {
   }
 
   @Post('read-all')
-  @UseGuards(JwtAuthGuard)
   async markAllRead(@Request() req) {
     await this.notificationsService.markAllRead(req.user.id);
     return { success: true };

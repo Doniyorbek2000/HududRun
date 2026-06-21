@@ -225,7 +225,7 @@ class _FriendsScreenState extends State<FriendsScreen>
               CircleAvatar(
                 radius: 22,
                 backgroundColor: color.withOpacity(0.2),
-                child: Text(name.substring(0, 1), style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 16)),
+                child: Text(name.isNotEmpty ? name[0] : 'U', style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 16)),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -272,7 +272,7 @@ class _FriendsScreenState extends State<FriendsScreen>
               CircleAvatar(
                 radius: 20,
                 backgroundColor: AppColors.primary.withOpacity(0.2),
-                child: Text(name.substring(0, 1), style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800)),
+                child: Text(name.isNotEmpty ? name[0] : 'U', style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800)),
               ),
               const SizedBox(width: 12),
               Expanded(

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class RoutePointDto {
@@ -14,9 +14,11 @@ class RoutePointDto {
 
 export class CreateActivityDto {
   @IsNumber()
+  @Min(0)
   distance: number;
 
   @IsNumber()
+  @Min(1)
   duration: number;
 
   @IsString()

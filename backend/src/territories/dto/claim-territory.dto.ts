@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional, IsNumber, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsNumber, IsArray, Min } from 'class-validator';
 
 export class ClaimTerritoryDto {
   @IsString()
@@ -11,5 +11,6 @@ export class ClaimTerritoryDto {
 
   @IsOptional()
   @IsNumber()
+  @Min(0)
   area?: number;
 }

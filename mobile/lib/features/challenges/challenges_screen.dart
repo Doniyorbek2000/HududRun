@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import '../../api_service.dart';
-import '../../theme.dart';
+import '../../theme_colors.dart';
 
 class ChallengesScreen extends StatefulWidget {
   final ApiService? apiService;
@@ -106,16 +106,16 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: HududRunTheme.background,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: HududRunTheme.background.withOpacity(0.9),
+        backgroundColor: AppColors.background.withOpacity(0.9),
         title: const Text(
           'MUSOBAQALAR',
           style: TextStyle(
             fontFamily: 'Montserrat',
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: HududRunTheme.primary,
+            color: AppColors.primary,
             fontStyle: FontStyle.italic,
             letterSpacing: 1,
           ),
@@ -123,7 +123,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.menu, color: HududRunTheme.primary),
+            icon: const Icon(Icons.menu, color: AppColors.primary),
           ),
         ],
         elevation: 0,
@@ -140,11 +140,11 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: HududRunTheme.onSurface)),
+                      color: AppColors.onSurface)),
               Text('Barchasi',
                   style: TextStyle(
                       fontSize: 13,
-                      color: HududRunTheme.primary,
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w600)),
             ],
           ),
@@ -184,7 +184,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: HududRunTheme.onSurface)),
+                  color: AppColors.onSurface)),
           const SizedBox(height: 16),
           _MilestoneTimeline(milestones: _milestones),
           const SizedBox(height: 28),
@@ -193,7 +193,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: HududRunTheme.onSurface)),
+                  color: AppColors.onSurface)),
           const SizedBox(height: 12),
           _GlassCard(
             child: Column(
@@ -208,10 +208,10 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                 TextButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.person_add,
-                      color: HududRunTheme.primary, size: 18),
+                      color: AppColors.primary, size: 18),
                   label: const Text("Yangi do'stlar qidirish",
                       style: TextStyle(
-                          color: HududRunTheme.primary,
+                          color: AppColors.primary,
                           fontWeight: FontWeight.w600)),
                 ),
               ],
@@ -264,12 +264,12 @@ class _ChallengeCard extends StatelessWidget {
                         style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: HududRunTheme.onSurface)),
+                            color: AppColors.onSurface)),
                     const SizedBox(height: 2),
                     Text(time,
                         style: const TextStyle(
                             fontSize: 11,
-                            color: HududRunTheme.outline)),
+                            color: AppColors.outline)),
                   ],
                 ),
               ),
@@ -297,7 +297,7 @@ class _ChallengeCard extends StatelessWidget {
               const Text('Progress',
                   style: TextStyle(
                       fontSize: 11,
-                      color: HududRunTheme.onSurfaceVariant)),
+                      color: AppColors.onSurfaceVariant)),
               Text(progressLabel,
                   style:
                       TextStyle(fontSize: 11, color: color)),
@@ -309,7 +309,7 @@ class _ChallengeCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 6,
-              backgroundColor: HududRunTheme.surfaceContainerHighest,
+              backgroundColor: AppColors.surfaceContainerHighest,
               valueColor: AlwaysStoppedAnimation(color),
             ),
           ),
@@ -326,12 +326,12 @@ class _ChallengeCard extends StatelessWidget {
             child: Row(
               children: [
                 const Icon(Icons.military_tech,
-                    color: HududRunTheme.secondary, size: 16),
+                    color: AppColors.secondary, size: 16),
                 const SizedBox(width: 8),
                 Text(reward,
                     style: const TextStyle(
                         fontSize: 11,
-                        color: HududRunTheme.onSurface)),
+                        color: AppColors.onSurface)),
               ],
             ),
           ),
@@ -372,10 +372,10 @@ class _MilestoneTimeline extends StatelessWidget {
                     height: 44,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: HududRunTheme.surfaceContainer,
+                      color: AppColors.surfaceContainer,
                       border: Border.all(
                           color: isLocked
-                              ? HududRunTheme.outlineVariant.withOpacity(0.3)
+                              ? AppColors.outlineVariant.withOpacity(0.3)
                               : color.withOpacity(0.5),
                           width: 2),
                     ),
@@ -385,7 +385,7 @@ class _MilestoneTimeline extends StatelessWidget {
                           : (e.key == 0
                               ? Icons.directions_run
                               : Icons.groups),
-                      color: isLocked ? HududRunTheme.outline : color,
+                      color: isLocked ? AppColors.outline : color,
                       size: 20,
                     ),
                   ),
@@ -419,11 +419,11 @@ class _MilestoneTimeline extends StatelessWidget {
                                 style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
-                                    color: HududRunTheme.onSurface,
+                                    color: AppColors.onSurface,
                                     letterSpacing: 0.3)),
                             if (isLocked)
                               const Icon(Icons.lock,
-                                  color: HududRunTheme.outline,
+                                  color: AppColors.outline,
                                   size: 16)
                             else if (current != null)
                               Text(
@@ -439,7 +439,7 @@ class _MilestoneTimeline extends StatelessWidget {
                         Text(m['desc'] as String,
                             style: const TextStyle(
                                 fontSize: 12,
-                                color: HududRunTheme.onSurfaceVariant,
+                                color: AppColors.onSurfaceVariant,
                                 height: 1.4)),
                         if (!isLocked && current != null) ...[
                           const SizedBox(height: 10),
@@ -450,7 +450,7 @@ class _MilestoneTimeline extends StatelessWidget {
                               value: progress,
                               minHeight: 4,
                               backgroundColor:
-                                  HududRunTheme.surfaceContainerHighest,
+                                  AppColors.surfaceContainerHighest,
                               valueColor:
                                   AlwaysStoppedAnimation(color),
                             ),
@@ -488,14 +488,14 @@ class _FriendRow extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: HududRunTheme.surfaceContainerHigh,
+                  color: AppColors.surfaceContainerHigh,
                   border: Border.all(
                       color: online
-                          ? HududRunTheme.primary.withOpacity(0.3)
+                          ? AppColors.primary.withOpacity(0.3)
                           : Colors.white.withOpacity(0.08)),
                 ),
                 child: const Icon(Icons.person,
-                    color: HududRunTheme.onSurfaceVariant, size: 22),
+                    color: AppColors.onSurfaceVariant, size: 22),
               ),
               if (online)
                 Positioned(
@@ -505,10 +505,10 @@ class _FriendRow extends StatelessWidget {
                     width: 10,
                     height: 10,
                     decoration: BoxDecoration(
-                      color: HududRunTheme.tertiary,
+                      color: AppColors.tertiary,
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: HududRunTheme.background, width: 1.5),
+                          color: AppColors.background, width: 1.5),
                     ),
                   ),
                 ),
@@ -523,13 +523,13 @@ class _FriendRow extends StatelessWidget {
                     style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: HududRunTheme.onSurface)),
+                        color: AppColors.onSurface)),
                 Text(status,
                     style: TextStyle(
                         fontSize: 12,
                         color: online
-                            ? HududRunTheme.tertiary
-                            : HududRunTheme.outline)),
+                            ? AppColors.tertiary
+                            : AppColors.outline)),
               ],
             ),
           ),
@@ -537,8 +537,8 @@ class _FriendRow extends StatelessWidget {
             onPressed: () {},
             style: TextButton.styleFrom(
               backgroundColor: online
-                  ? HududRunTheme.primary.withOpacity(0.1)
-                  : HududRunTheme.surfaceContainer,
+                  ? AppColors.primary.withOpacity(0.1)
+                  : AppColors.surfaceContainer,
               shape: const StadiumBorder(),
               padding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -549,8 +549,8 @@ class _FriendRow extends StatelessWidget {
               style: TextStyle(
                   fontSize: 12,
                   color: online
-                      ? HududRunTheme.primary
-                      : HududRunTheme.onSurfaceVariant,
+                      ? AppColors.primary
+                      : AppColors.onSurfaceVariant,
                   fontWeight: FontWeight.w600),
             ),
           ),

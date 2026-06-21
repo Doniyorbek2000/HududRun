@@ -252,6 +252,7 @@ class _TrophyRoomScreenState extends State<TrophyRoomScreen>
   }
 
   Widget _buildFeaturedTrophy() {
+    if (_trophies.isEmpty) return const SizedBox.shrink();
     final featured = _trophies.firstWhere(
       (t) => t['earned'] as bool && t['rarity'] != 'Umumiy',
       orElse: () => _trophies.first,

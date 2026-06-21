@@ -335,7 +335,7 @@ class _PodiumCard extends StatelessWidget {
             radius: 20,
             backgroundColor: userColor.withOpacity(0.2),
             child: Text(
-              name.substring(0, 1),
+              name.isNotEmpty ? name[0] : 'U',
               style: TextStyle(color: userColor, fontWeight: FontWeight.w800),
             ),
           ),
@@ -407,7 +407,7 @@ class _LeaderRow extends StatelessWidget {
           CircleAvatar(
             radius: 16,
             backgroundColor: userColor.withOpacity(0.2),
-            child: Text(name.substring(0, 1), style: TextStyle(color: userColor, fontSize: 12, fontWeight: FontWeight.w700)),
+            child: Text(name.isNotEmpty ? name[0] : 'U', style: TextStyle(color: userColor, fontSize: 12, fontWeight: FontWeight.w700)),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -476,7 +476,7 @@ class _SquadRow extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                tag.isNotEmpty ? tag.substring(0, tag.length.clamp(0, 2)) : name.substring(0, 1),
+                tag.isNotEmpty ? tag.substring(0, tag.length.clamp(0, 2)) : (name.isNotEmpty ? name[0] : 'S'),
                 style: TextStyle(color: squadColor, fontWeight: FontWeight.w900, fontSize: 14),
               ),
             ),
@@ -534,7 +534,7 @@ class _WeeklyRow extends StatelessWidget {
           CircleAvatar(
             radius: 18,
             backgroundColor: userColor.withOpacity(0.2),
-            child: Text(name.substring(0, 1), style: TextStyle(color: userColor, fontWeight: FontWeight.w800)),
+            child: Text(name.isNotEmpty ? name[0] : 'U', style: TextStyle(color: userColor, fontWeight: FontWeight.w800)),
           ),
           const SizedBox(width: 12),
           Expanded(

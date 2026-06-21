@@ -63,7 +63,6 @@ export class UsersService {
         level: true,
         xp: true,
         isPremium: true,
-        isAdmin: true,
         createdAt: true,
         updatedAt: true,
       },

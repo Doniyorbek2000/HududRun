@@ -176,24 +176,20 @@ class ApiService {
 
   Future<Map<String, dynamic>> claimPolygon(
       List<Map<String, dynamic>> polygon, double area) async {
-    return _authenticatedPost('/territories/claim', {
+    final response = await _authenticatedPost('/territories/claim', {
       'h3Index': 'poly_${DateTime.now().millisecondsSinceEpoch}',
       'polygon': polygon,
       'area': area,
     });
+    return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
   Future<List<Map<String, dynamic>>> fetchTerritories() async {
-    final token = await _storage.read(key: 'access_token');
-    final response = await http.get(
-      Uri.parse('$baseUrl/territories'),
-      headers: token != null ? {'Authorization': 'Bearer $token'} : {},
-    );
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.cast<Map<String, dynamic>>();
+    try {
+      return await _authenticatedGetList('/territories');
+    } catch (_) {
+      return [];
     }
-    return [];
   }
 
   // ── Challenges ───────────────────────────────────────────────────────────
@@ -247,7 +243,7 @@ class ApiService {
 
   Future<List<Map<String, dynamic>>> fetchNotifications() async {
     try {
-      return await _authenticatedGetList('/notifications');
+      return await _authenticatedGetList('/notifications/me');
     } catch (_) {
       return [];
     }

@@ -483,7 +483,7 @@ class _MemberRow extends StatelessWidget {
           CircleAvatar(
             backgroundColor: AppColors.surfaceContainerHigh,
             child: Text(
-              name.substring(0, 1),
+              name.isNotEmpty ? name[0] : 'U',
               style: const TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w700,
