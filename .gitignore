@@ -18,6 +18,9 @@ ios/Pods/
 *.jks
 *.keystore
 key.properties
+google-services.json
 .vscode/
 .idea/
 *.log
+*.iml
+local.properties

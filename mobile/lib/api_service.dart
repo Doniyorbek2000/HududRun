@@ -4,16 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'config.dart';
 import 'models/user.dart';
 
 class ApiService {
-  static String get baseUrl {
-    if (kIsWeb) return 'http://localhost:3000';
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:3000';
-    }
-    return 'http://localhost:3000';
-  }
+  static String get baseUrl => AppConfig.apiBaseUrl;
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,10 +12,19 @@ import 'l10n/app_localizations.dart';
 import 'models/user.dart';
 import 'screens/login_screen.dart';
 import 'theme.dart';
+import 'theme_colors.dart';
 
 final GlobalKey<_MyAppState> appKey = GlobalKey<_MyAppState>();
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+    systemNavigationBarColor: AppColors.background,
+    systemNavigationBarIconBrightness: Brightness.light,
+  ));
   runApp(MyApp(key: appKey));
 }
 
@@ -115,7 +125,10 @@ class _MyAppState extends State<MyApp> {
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       home: _isLoading
-          ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+          ? const Scaffold(
+              backgroundColor: AppColors.background,
+              body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+            )
           : !_isReady
           ? SplashScreen(onReady: _handleReady)
           : (!_hasSeenOnboarding && _user == null)

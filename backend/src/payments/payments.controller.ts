@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Headers, HttpCode, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -25,20 +26,21 @@ export class PaymentsController {
     return this.paymentsService.getStatus(req.user.id, id);
   }
 
-  // Payme JSON-RPC merchant webhook (authenticated via Basic auth header, not JWT)
+  @SkipThrottle()
   @Post('payme/webhook')
   @HttpCode(200)
   paymeWebhook(@Body() body: any, @Headers('authorization') authHeader: string) {
     return this.paymentsService.handlePaymeWebhook(body, authHeader);
   }
 
-  // Click Prepare/Complete webhooks (authenticated via signature, not JWT)
+  @SkipThrottle()
   @Post('click/prepare')
   @HttpCode(200)
   clickPrepare(@Body() body: any) {
     return this.paymentsService.handleClickPrepare(body);
   }
 
+  @SkipThrottle()
   @Post('click/complete')
   @HttpCode(200)
   clickComplete(@Body() body: any) {
