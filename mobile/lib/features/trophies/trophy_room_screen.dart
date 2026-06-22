@@ -142,27 +142,19 @@ class _TrophyRoomScreenState extends State<TrophyRoomScreen>
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: AppColors.background,
-        body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
-      );
+      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: _buildHeader()),
-            SliverToBoxAdapter(child: _buildStatsRow()),
-            SliverToBoxAdapter(child: _buildFeaturedTrophy()),
-            SliverToBoxAdapter(child: _buildTabBar()),
-            SliverToBoxAdapter(child: _buildSeasonalProgress()),
-            _buildTrophyGrid(),
-            const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
-          ],
-        ),
-      ),
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: _buildHeader()),
+        SliverToBoxAdapter(child: _buildStatsRow()),
+        SliverToBoxAdapter(child: _buildFeaturedTrophy()),
+        SliverToBoxAdapter(child: _buildTabBar()),
+        SliverToBoxAdapter(child: _buildSeasonalProgress()),
+        _buildTrophyGrid(),
+        const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
+      ],
     );
   }
 

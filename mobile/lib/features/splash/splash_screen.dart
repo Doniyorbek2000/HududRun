@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../../theme_colors.dart';
 
 class SplashScreen extends StatefulWidget {
   final VoidCallback onReady;
@@ -34,78 +35,98 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF020812), Color(0xFF101D40)],
+      backgroundColor: AppColors.background,
+      body: Stack(
+        children: [
+          Positioned(
+            left: 40,
+            top: 120,
+            child: _GlowCircle(
+              size: 110,
+              color: AppColors.primary.withOpacity(0.12),
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              left: 40,
-              top: 120,
-              child: _GlowCircle(
-                size: 110,
-                color: const Color.fromRGBO(68, 138, 255, 0.18),
-              ),
+          Positioned(
+            right: 20,
+            top: 80,
+            child: _GlowCircle(
+              size: 70,
+              color: AppColors.secondary.withOpacity(0.15),
             ),
-            Positioned(
-              right: 20,
-              top: 80,
-              child: _GlowCircle(
-                size: 70,
-                color: const Color.fromRGBO(171, 71, 188, 0.24),
-              ),
+          ),
+          Positioned(
+            left: -30,
+            bottom: 100,
+            child: _GlowCircle(
+              size: 90,
+              color: AppColors.tertiary.withOpacity(0.08),
             ),
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ScaleTransition(
-                    scale: Tween(begin: 0.8, end: 1.05).animate(
-                      CurvedAnimation(
-                        parent: _animationController,
-                        curve: Curves.easeInOut,
+          ),
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ScaleTransition(
+                  scale: Tween(begin: 0.85, end: 1.05).animate(
+                    CurvedAnimation(
+                      parent: _animationController,
+                      curve: Curves.easeInOut,
+                    ),
+                  ),
+                  child: Container(
+                    width: 104,
+                    height: 104,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: AppColors.conquestGradient,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFE6B00).withOpacity(0.4),
+                          blurRadius: 30,
+                          spreadRadius: 4,
+                        ),
+                      ],
                     ),
-                    child: const CircleAvatar(
-                      radius: 52,
-                      backgroundColor: Color(0xFF2B3B76),
-                      child: Icon(Icons.explore, size: 48, color: Colors.white),
-                    ),
+                    child: const Icon(Icons.directions_run, size: 52, color: Colors.white),
                   ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'HududRun',
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.1,
-                      color: Colors.white,
-                    ),
+                ),
+                const SizedBox(height: 28),
+                const Text(
+                  'HududRun',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2,
+                    color: AppColors.onSurface,
+                    fontFamily: 'Montserrat',
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Territory run battle',
-                    style: TextStyle(fontSize: 16, color: Colors.white70),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Yugur. Egalla. Hukmronlik qil.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.onSurfaceVariant,
+                    letterSpacing: 0.5,
                   ),
-                  const SizedBox(height: 30),
-                  const SizedBox(
-                    height: 6,
-                    width: 120,
-                    child: LinearProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      backgroundColor: Color(0x33FFFFFF),
-                    ),
+                ),
+                const SizedBox(height: 36),
+                SizedBox(
+                  height: 4,
+                  width: 120,
+                  child: LinearProgressIndicator(
+                    valueColor: const AlwaysStoppedAnimation<Color>(AppColors.secondary),
+                    backgroundColor: AppColors.surfaceContainerHigh,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

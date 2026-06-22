@@ -51,7 +51,7 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
         foregroundColor: AppColors.onSurface,
         elevation: 0,
         title: const Text(
-          'SQUAD SETTINGS',
+          'JAMOA SOZLAMALARI',
           style: TextStyle(
             fontFamily: 'Montserrat',
             fontWeight: FontWeight.w800,
@@ -62,7 +62,7 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.local_fire_department_outlined, color: Color(0xFFFE6B00)),
-            tooltip: 'Squad War',
+            tooltip: 'Jamoa jangi',
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => SquadWarScreen(apiService: widget.apiService)),
             ),
@@ -174,7 +174,7 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
           TextField(
             controller: _nameController,
             style: const TextStyle(color: AppColors.onSurface),
-            decoration: _inputDecoration('Squad nomi', Icons.group),
+            decoration: _inputDecoration('Jamoa nomi', Icons.group),
           ),
           const SizedBox(height: 12),
           TextField(
@@ -237,7 +237,7 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
       child: Column(
         children: [
           _ToggleRow(
-            title: 'Ochiq squad',
+            title: 'Ochiq jamoa',
             subtitle: 'Har kim qo\'shila oladi',
             value: _isPublic,
             onChanged: (v) => setState(() => _isPublic = v),
@@ -362,7 +362,7 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
                   Icon(Icons.delete_forever, color: AppColors.error, size: 20),
                   SizedBox(width: 8),
                   Text(
-                    'Squadni o\'chirish',
+                    'Jamoani o\'chirish',
                     style: TextStyle(
                       color: AppColors.error,
                       fontWeight: FontWeight.w700,
@@ -384,11 +384,11 @@ class _SquadSettingsScreenState extends State<SquadSettingsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceContainer,
         title: const Text(
-          'Squadni o\'chirish',
+          'Jamoani o\'chirish',
           style: TextStyle(color: AppColors.onSurface, fontWeight: FontWeight.w700),
         ),
         content: const Text(
-          'Haqiqatan ham squadni o\'chirmoqchimisiz? Bu amalni qaytarib bo\'lmaydi.',
+          'Haqiqatan ham jamoani o\'chirmoqchimisiz? Bu amalni qaytarib bo\'lmaydi.',
           style: TextStyle(color: AppColors.onSurfaceVariant),
         ),
         actions: [

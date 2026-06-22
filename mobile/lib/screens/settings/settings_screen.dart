@@ -116,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _SwitchItem(
               icon: Icons.emoji_events_outlined,
               title: 'Musobaqalar',
-              subtitle: 'Yangi musobaqa boshlananda',
+              subtitle: 'Yangi musobaqa boshlanganda',
               value: _notifyChallenge,
               onChanged: (v) {
                 setState(() => _notifyChallenge = v);

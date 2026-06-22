@@ -24,21 +24,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       icon: Icons.shield,
     ),
     _OnboardingSlide(
-      title: 'Reytingda ko‘tariling',
+      title: ‘Reytingda ko\’tariling’,
       description:
           'Hududlar va asosiy natijalaringiz asosida global reytingga chiqish.',
       icon: Icons.emoji_events,
     ),
     _OnboardingSlide(
-      title: 'Challenge va badge oling',
+      title: ‘Musobaqalar va nishonlar’,
       description:
-          'Har bir yugurish bilan yangi badge va bonus XP yutib oling.',
+          ‘Har bir yugurish bilan yangi nishonlar va bonus XP yutib oling.’,
       icon: Icons.star,
     ),
     _OnboardingSlide(
-      title: 'Start your battle',
+      title: ‘Jangni boshlang’,
       description:
-          'Xaritani oching, o‘zingizning hududingizni kengaytiring va g‘olib chiqing.',
+          ‘Xaritani oching, o\’zingizning hududingizni kengaytiring va g\’olib chiqing.’,
       icon: Icons.run_circle,
     ),
   ];

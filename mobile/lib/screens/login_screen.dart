@@ -1,6 +1,4 @@
 // ignore_for_file: deprecated_member_use
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../api_service.dart';
@@ -274,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen>
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 12),
                               child: Text(
-                                l10n.isRtl ? 'أو' : 'Or',
+                                l10n.isRtl ? 'أو' : 'Yoki',
                                 style: const TextStyle(
                                   color: AppColors.outline,
                                   fontSize: 13,

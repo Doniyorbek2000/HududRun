@@ -19,7 +19,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       'time': 'Qolgan vaqt: 2 kun 14s',
       'progress': 0.65,
       'progressLabel': '65%',
-      'reward': 'Elite Badge + 500 Pts',
+      'reward': 'Elita nishoni + 500 ball',
       'color': 0xFFADC6FF,
       'hot': false,
     },
@@ -28,7 +28,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       'time': 'Qolgan vaqt: 18s 45m',
       'progress': 0.6,
       'progressLabel': '3/5 Hudud',
-      'reward': '1200 Pts + King Title',
+      'reward': '1200 ball + Qirol unvoni',
       'color': 0xFF2AE500,
       'hot': true,
     },
@@ -100,35 +100,12 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
 
   static const _friends = [
     {'name': 'Zarina', 'status': 'Hozir yugurmoqda', 'online': true},
-    {'name': 'Jaloliddin', 'status': 'Offline', 'online': false},
+    {'name': 'Jaloliddin', 'status': 'Oflayn', 'online': false},
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background.withOpacity(0.9),
-        title: const Text(
-          'MUSOBAQALAR',
-          style: TextStyle(
-            fontFamily: 'Montserrat',
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: AppColors.primary,
-            fontStyle: FontStyle.italic,
-            letterSpacing: 1,
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.menu, color: AppColors.primary),
-          ),
-        ],
-        elevation: 0,
-      ),
-      body: ListView(
+    return ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
         children: [
           // ── Faol musobaqalar ──────────────────────────────────────────
@@ -218,7 +195,6 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
             ),
           ),
         ],
-      ),
     );
   }
 }

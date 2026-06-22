@@ -70,9 +70,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.background,
-      child: ListView(
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.onSurface,
+        elevation: 0,
+        title: const Text(
+          'PROFIL',
+          style: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+            letterSpacing: 1.5,
+          ),
+        ),
+      ),
+      body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
         children: [
           // ── Avatar + name + country ──────────────────────────────────────
@@ -116,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
           const SizedBox(height: 6),
           Text(
-            _user.isPremium ? 'Premium Runner' : 'Rookie Runner',
+            _user.isPremium ? 'Premium Yuguruvchi' : 'Yangi Yuguruvchi',
             textAlign: TextAlign.center,
             style: const TextStyle(color: AppColors.outline, fontSize: 13),
           ),
@@ -234,9 +248,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 16),
           ],
           const _InfoCard(
-            title: 'Active mission',
+            title: 'Faol vazifa',
             description:
-                'Secure contested zone near your current path to earn bonus XP and power.',
+                'Yaqin atrofdagi tortishuvli hududni egallang va bonus XP oling.',
             icon: Icons.track_changes,
           ),
         ],
@@ -410,7 +424,7 @@ class _BadgeRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Badges',
+            'Nishonlar',
             style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14),
           ),
           const SizedBox(height: 14),
@@ -418,17 +432,17 @@ class _BadgeRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
               _BadgeChip(
-                label: 'Territory Ace',
+                label: 'Hudud Ustasi',
                 icon: Icons.flag,
                 color: Color(0xFF7B92FF),
               ),
               _BadgeChip(
-                label: 'Speed Runner',
+                label: 'Tez Yuguruvchi',
                 icon: Icons.speed,
                 color: Color(0xFF4CD6A9),
               ),
               _BadgeChip(
-                label: 'Guardian',
+                label: 'Himoyachi',
                 icon: Icons.shield,
                 color: Color(0xFFEF9A5B),
               ),

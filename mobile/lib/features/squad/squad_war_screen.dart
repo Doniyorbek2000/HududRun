@@ -102,7 +102,7 @@ class _SquadWarScreenState extends State<SquadWarScreen>
         foregroundColor: AppColors.onSurface,
         elevation: 0,
         title: const Text(
-          'SQUAD WAR',
+          'JAMOA JANGI',
           style: TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: 1.5),
         ),
         bottom: TabBar(
@@ -202,7 +202,7 @@ class _SquadWarScreenState extends State<SquadWarScreen>
               Icon(Icons.local_fire_department, color: Colors.white, size: 22),
               SizedBox(width: 8),
               Text(
-                "HAFTALIK SQUAD WAR",
+                "HAFTALIK JAMOA JANGI",
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14, letterSpacing: 1.2),
               ),
             ],

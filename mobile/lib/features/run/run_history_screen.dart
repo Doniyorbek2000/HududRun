@@ -18,7 +18,7 @@ class _RunHistoryScreenState extends State<RunHistoryScreen> {
   // Computed stats
   double get _totalKm => _activities.fold(0.0, (s, a) => s + ((a['distance'] as num?)?.toDouble() ?? 0));
   int get _totalRuns => _activities.length;
-  int get _totalMinutes => _activities.fold(0, (s, a) => s + ((a['duration'] as num?)?.toInt() ?? 0));
+  int get _totalSeconds => _activities.fold(0, (s, a) => s + ((a['duration'] as num?)?.toInt() ?? 0));
   double get _bestRun => _activities.isEmpty ? 0 : _activities.map((a) => (a['distance'] as num?)?.toDouble() ?? 0).reduce((a, b) => a > b ? a : b);
 
   @override
@@ -111,7 +111,7 @@ class _RunHistoryScreenState extends State<RunHistoryScreen> {
             children: [
               _StatBox(label: 'Jami km', value: _totalKm.toStringAsFixed(1), icon: Icons.route, color: AppColors.primary),
               _StatBox(label: 'Yugurishlar', value: '$_totalRuns', icon: Icons.directions_run, color: AppColors.secondary),
-              _StatBox(label: 'Vaqt', value: _formatDuration(_totalMinutes), icon: Icons.timer_outlined, color: AppColors.tertiary),
+              _StatBox(label: 'Vaqt', value: _formatDuration(_totalSeconds), icon: Icons.timer_outlined, color: AppColors.tertiary),
             ],
           ),
           const SizedBox(height: 14),

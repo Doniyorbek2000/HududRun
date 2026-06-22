@@ -157,36 +157,46 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
     setState(() { _isRunning = false; _isLoading = true; });
 
-    final durationSec = DateTime.now()
-        .difference(_runStartTime ?? DateTime.now())
-        .inSeconds;
+    final endTime = DateTime.now();
+    final startTime = _runStartTime ?? endTime;
+    final durationSec = endTime.difference(startTime).inSeconds;
+    final distKm = _totalDistance / 1000;
 
-    // Build polygon (close the loop)
     final polygon = [..._runPath, _runPath.first];
     final polygonData = polygon.map((p) => {'lat': p.latitude, 'lng': p.longitude}).toList();
+    final routeData = _runPath.map((p) => {'lat': p.latitude, 'lng': p.longitude}).toList();
 
-    // Calculate area using Shoelace formula (rough km²)
     double area = _calculatePolygonAreaKm2(_runPath);
 
-    // Detect which territories we're overlapping (stolen)
-    final prevOwners = <String>[];
+    final prevOwnerSet = <String>{};
     for (final t in _territories) {
       final owner = t['ownerUsername'] as String?;
-      if (owner != null) prevOwners.add(owner);
+      if (owner != null) prevOwnerSet.add(owner);
     }
 
-    // Claim territory
     try {
       await widget.apiService?.claimPolygon(polygonData, area);
       _capturedCount = 1;
     } catch (_) {}
 
-    // Track stolen from
-    final List<String> stolen = [];
+    try {
+      await widget.apiService?.saveActivity(
+        distance: distKm,
+        duration: durationSec,
+        startTime: startTime,
+        endTime: endTime,
+        route: routeData,
+      );
+    } catch (_) {}
+
+    await _loadTerritories();
+
+    final newOwnerSet = <String>{};
     for (final t in _territories) {
       final owner = t['ownerUsername'] as String?;
-      if (owner != null && !stolen.contains(owner)) stolen.add(owner);
+      if (owner != null) newOwnerSet.add(owner);
     }
+    final stolen = prevOwnerSet.difference(newOwnerSet).toList();
     if (stolen.isNotEmpty) {
       setState(() {
         _stolenFromUsers = stolen.take(5).toList();
@@ -197,13 +207,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       });
     }
 
-    await _loadTerritories();
-
     if (!mounted) return;
     setState(() => _isLoading = false);
 
-    // Show run summary
-    final distKm = _totalDistance / 1000;
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => RunSummaryScreen(
@@ -212,8 +218,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           territoriesCaptured: _capturedCount,
           caloriesBurned: (distKm * 60).round(),
           pointsEarned: (_capturedCount * 50 + (distKm * 10).round()),
-          startTime: _runStartTime ?? DateTime.now(),
-          endTime: DateTime.now(),
+          startTime: startTime,
+          endTime: endTime,
         ),
       ),
     );
@@ -237,9 +243,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
+    return Container(
+      color: AppColors.background,
+      child: Stack(
         children: [
           _buildMap(),
           _buildTopStats(),

@@ -99,7 +99,7 @@ class TeamAchievementsScreen extends StatelessWidget {
         foregroundColor: AppColors.onSurface,
         elevation: 0,
         title: const Text(
-          'TEAM ACHIEVEMENTS',
+          'JAMOA YUTUQLARI',
           style: TextStyle(
             fontFamily: 'Montserrat',
             fontWeight: FontWeight.w800,
@@ -309,7 +309,7 @@ class TeamAchievementsScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '+${c['reward']} pts',
+                    '+${c['reward']} ball',
                     style: const TextStyle(
                       color: AppColors.outline,
                       fontSize: 10,

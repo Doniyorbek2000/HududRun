@@ -8,7 +8,7 @@ import '../challenges/challenges_screen.dart';
 import '../leaderboard/leaderboard_screen.dart';
 import '../map/map_screen.dart';
 import '../notifications/notifications_screen.dart';
-import '../notifications/notifications_widget.dart';
+import '../../widgets/streak_widget.dart';
 import '../profile/profile_screen.dart';
 import '../squad/squad_settings_screen.dart';
 import '../trophies/trophy_room_screen.dart';
@@ -245,13 +245,21 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _user.username,
-                  style: const TextStyle(
-                    color: AppColors.onSurface,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      _user.username,
+                      style: const TextStyle(
+                        color: AppColors.onSurface,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                      ),
+                    ),
+                    if (_user.streak > 0) ...[
+                      const SizedBox(width: 8),
+                      StreakWidget(streak: _user.streak),
+                    ],
+                  ],
                 ),
                 Text(
                   'Daraja ${_user.level} • ${_user.isPremium ? 'Premium' : 'Oddiy'}',

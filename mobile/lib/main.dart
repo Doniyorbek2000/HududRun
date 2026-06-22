@@ -142,6 +142,7 @@ class _MyAppState extends State<MyApp> {
               apiService: _apiService,
               user: _user!,
               onLogout: _handleLogout,
+              onLocaleChanged: setLocale,
             ),
     );
   }

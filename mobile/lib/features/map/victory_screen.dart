@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../home/home_screen.dart';
 import '../../theme_colors.dart';
 
 class VictoryScreen extends StatefulWidget {
@@ -199,7 +198,7 @@ class _VictoryScreenState extends State<VictoryScreen>
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'RANK PROGRESS',
+                                  'DARAJA RIVOJLANISHI',
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,

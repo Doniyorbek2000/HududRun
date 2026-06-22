@@ -7,9 +7,11 @@ class RunSummaryScreen extends StatelessWidget {
   final double distanceKm;
   final int durationSeconds;
   final int caloriesBurned;
-  final List<String> capturedTerritories;
+  final int territoriesCaptured;
   final int pointsEarned;
   final String? newAchievement;
+  final DateTime startTime;
+  final DateTime endTime;
   final VoidCallback? onShare;
   final VoidCallback? onHome;
 
@@ -18,8 +20,10 @@ class RunSummaryScreen extends StatelessWidget {
     required this.distanceKm,
     required this.durationSeconds,
     required this.caloriesBurned,
-    required this.capturedTerritories,
+    required this.territoriesCaptured,
     required this.pointsEarned,
+    required this.startTime,
+    required this.endTime,
     this.newAchievement,
     this.onShare,
     this.onHome,
@@ -66,7 +70,7 @@ class RunSummaryScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               // Territories section
-              if (capturedTerritories.isNotEmpty) ...[
+              if (territoriesCaptured > 0) ...[
                 _buildTerritoriesSection(),
                 const SizedBox(height: 16),
               ],
@@ -210,7 +214,7 @@ class RunSummaryScreen extends StatelessWidget {
           child: _GlassStatCard(
             icon: Icons.flag_outlined,
             iconColor: AppColors.tertiary,
-            value: '${capturedTerritories.length}',
+            value: '$territoriesCaptured',
             label: 'Hududlar',
           ),
         ),
@@ -236,9 +240,9 @@ class RunSummaryScreen extends StatelessWidget {
             children: [
               Icon(Icons.map, color: AppColors.tertiary, size: 18),
               const SizedBox(width: 8),
-              const Text(
-                'Yangi hududlar egallandi',
-                style: TextStyle(
+              Text(
+                '$territoriesCaptured ta yangi hudud egallandi',
+                style: const TextStyle(
                   color: AppColors.onSurface,
                   fontWeight: FontWeight.w700,
                   fontSize: 15,
@@ -247,7 +251,6 @@ class RunSummaryScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          // Mini map placeholder
           Container(
             height: 100,
             decoration: BoxDecoration(
@@ -264,32 +267,6 @@ class RunSummaryScreen extends StatelessWidget {
                   Text(
                     'Xarita ko\'rinishi',
                     style: TextStyle(color: AppColors.outline, fontSize: 13),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          ...capturedTerritories.map(
-            (t) => Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: AppColors.tertiary,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    t,
-                    style: const TextStyle(
-                      color: AppColors.onSurface,
-                      fontSize: 13,
-                    ),
                   ),
                 ],
               ),
@@ -333,7 +310,7 @@ class RunSummaryScreen extends StatelessWidget {
                     const Icon(Icons.star, color: AppColors.primary, size: 18),
                     const SizedBox(width: 6),
                     Text(
-                      '+$pointsEarned pts',
+                      '+$pointsEarned ball',
                       style: const TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w700,
