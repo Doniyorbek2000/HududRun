@@ -155,7 +155,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK', style: TextStyle(color: AppColors.tertiary)),
+            child: const Text('Tushunarli', style: TextStyle(color: AppColors.tertiary)),
           ),
         ],
       ),
